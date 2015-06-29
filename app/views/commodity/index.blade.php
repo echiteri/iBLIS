@@ -46,7 +46,7 @@
                  	<td>{{ $commodity->unit_price}}</td>
 					<td>{{ $commodity->item_code }}</td>
 					<td>{{ $commodity->storage_req }}</td>
-					<td>{{ $commodity->available() }}</td>
+					<td>{{ $commodity->receipts?$commodity->available():0 }}</td>
 					<td>{{ $commodity->min_level}}</td>
 					<td>{{ $commodity->max_level }}</td>
 					<td> 

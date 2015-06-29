@@ -47,9 +47,14 @@ class Receipt extends Eloquent
 
 		); 
 		return $reportData;
-
-
-
 	}
 
+
+	/**
+	* Relationship between issues
+	*/
+	public function issues()
+	{
+		return $this->hasMany('Issue');
+	}
 }

@@ -37,8 +37,11 @@ class Commodity extends Eloquent
 	public function available()
 	{
 		//Total received - total issued
-		$totalReceived = DB::table('receipts')->where('commodity_id', '=', $this->id)->sum('quantity');
-		$totalIssued = DB::table('issues')->join('topup_requests', 'topup_request_id', '=', 'topup_requests.id')->sum('quantity_issued');
+		$totalReceived = $this->receipts->sum('quantity');
+		$totalIssued = 0;
+		foreach ($this->receipts as $receipt) {
+			$totalIssued+=$receipt->issues->sum('quantity_issued');
+		}
 
 		return $totalReceived - $totalIssued;
 	}

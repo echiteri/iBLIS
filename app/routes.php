@@ -36,6 +36,11 @@ Route::group(array("before" => "auth"), function()
         "as" => "user.home",
         "uses" => "UserController@homeAction"
         ));
+
+    Route::any("/humastar", array(
+        "uses" => "HumastarController@index"
+    ));
+
     Route::group(array("before" => "checkPerms:manage_users"), function() {
         Route::resource('user', 'UserController');
         Route::get("/user/{id}/delete", array(

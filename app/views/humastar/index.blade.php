@@ -14,9 +14,9 @@
 		<span class="glyphicon glyphicon-adjust"></span>
 		{{ trans('messages.humastar') }}
 		<div class="panel-btn">
-			<a class="btn btn-sm btn-info" href="{{ URL::to("facility/create") }}" >
+			<a class="btn btn-sm btn-info" href="{{ URL::to("humastar/upload") }}" >
 				<span class="glyphicon glyphicon-plus-sign"></span>
-				{{ trans('messages.add-humastar') }}
+				{{ trans('messages.upload-humastar') }}
 			</a>
 		</div>
 	</div>

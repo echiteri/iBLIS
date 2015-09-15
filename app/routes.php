@@ -37,8 +37,17 @@ Route::group(array("before" => "auth"), function()
         "uses" => "UserController@homeAction"
         ));
 
-    Route::any("/humastar", array(
+    Route::get("/humastar", array(
         "uses" => "HumastarController@index"
+    ));
+
+    Route::get("/humastar/upload", array(
+        "uses" => "HumastarController@upload"
+    ));
+
+    Route::post("/humastar", array(
+        "as" => "humastar.processASTM",
+        "uses" => "HumastarController@processASTM"
     ));
 
     Route::group(array("before" => "checkPerms:manage_users"), function() {

@@ -15,6 +15,31 @@ class HumastarController extends \BaseController {
 	}
 
 	/**
+	* Loads the page for upload functionality
+	*/
+	public function upload()
+	{
+		return View::make("humastar.upload");
+	}
+
+	/**
+	* Process ASTM file that is uploaded
+	*
+	*/
+	public function processASTM()
+	{
+		//read contents
+		$astm = Input::file('astm')->getRealPath();
+		$results = File::get($astm);
+		//Validate file
+		//Get the juicy details
+		
+		dd(explode('P|', $results));
+		//Match to test and measure id's
+		//Present to use for final validation
+	}
+
+	/**
 	* Recieves a list of tests and generates an ASTM.
 	* 
 	* @param an array of tests

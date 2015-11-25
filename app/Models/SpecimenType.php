@@ -3,6 +3,9 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use DateTime;
+use DateInterval;
+
 class SpecimenType extends Model
 {
 	/**

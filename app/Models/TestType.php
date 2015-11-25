@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 use DateTime;
+use DateInterval;
 use DB;
 
 class TestType extends Model
@@ -184,7 +185,7 @@ class TestType extends Model
 	public static function supportPrevalenceCounts()
 	{
 
-		$testTypes = new Illuminate\Database\Eloquent\Collection();
+		$testTypes = collect();
 
 		// Get ALPHANUMERIC measures whose possible results (or their interpretation) can be
 		// reduced to either Positive or Negative
@@ -204,7 +205,7 @@ class TestType extends Model
 			if(!empty($objArray)){
 				foreach ($measureORM->testTypes()->get() as $tType) {
 					if($tType->measures()->count() == 1){
-						$testTypes->add($tType);
+						$testTypes->push($tType);
 					}
 				}
 			}
@@ -416,7 +417,7 @@ class TestType extends Model
 		$measureIds = Measure::where('name', 'CD4')->lists('id');
 		$toPlusOne = date_add(new DateTime($to), date_interval_create_from_date_string('1 day'));
 		$tests = $this->tests()->whereBetween('time_created', [$from, $toPlusOne])->lists('id');
-		$results = TestResult::whereIn('test_id', $tests)->whereIn('measure_id', $measureIds)->where('result', $comment)->lists('test_id');
+		$results = TestResult::whereIn('test_id', $tests)->whereIn('measure_id', $measureIds)->where('result', $comment)->lists('test_id')->toArray();
 		$qualifier = TestResult::whereIn('test_id', $tests)->whereIn('measure_id', $measureIds)->whereRaw("result REGEXP '^[0-9]+$'");
 		if($range == '< 500')
 		{
@@ -426,7 +427,7 @@ class TestType extends Model
 		{
 			$qualifier = $qualifier->where('result', '>', 500);
 		}
-		$qualifier = $qualifier->lists('test_id');
+		$qualifier = $qualifier->lists('test_id')->toArray();
 		return count(array_intersect(array_unique($qualifier), array_unique($results)));
 	}
 }

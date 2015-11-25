@@ -33,7 +33,7 @@ class Measure extends Model
 	 */
 	public function measureRanges()
 	{
-	  return $this->hasMany('MeasureRange');
+	  return $this->hasMany('App\Models\MeasureRange');
 	}
 
 	/**
@@ -41,7 +41,7 @@ class Measure extends Model
 	 */
 	public function measureType()
 	{
-	  return $this->belongsTo('MeasureType');
+	  return $this->belongsTo('App\Models\MeasureType');
 	}
 
 	/**
@@ -49,7 +49,7 @@ class Measure extends Model
 	 */
 	public function testTypes()
 	{
-	  return $this->belongsToMany('TestType', 'testtype_measures');
+	  return $this->belongsToMany('App\Models\TestType', 'testtype_measures');
 	}
 	public function getResultInterpretation($result)
 	{

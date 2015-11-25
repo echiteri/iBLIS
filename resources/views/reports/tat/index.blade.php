@@ -44,8 +44,9 @@
 						{!! Form::label('description',  Lang::choice('messages.test-category', 2)) !!}
 					</div>
 					<div class="col-sm-2">
-						{!! Form::select('section_id', array(''=>trans('messages.select-lab-section'))+$labSections, 
-							    		Request::old('testCategory') ? Request::old('testCategory') : $testCategory, 
+						{!! Form::select('section_id', array(''=>trans('messages.select-lab-section'))+$labSections->toArray(), 
+							    		
+							    		old($testCategory) ? old($testCategory) : $testCategory, 
 											array('class' => 'form-control', 'id' => 'section_id')) !!}
 				    </div>
 		    	</div>
@@ -57,7 +58,8 @@
 				    </div>
 					<div class="col-sm-2">
 					    {!! Form::select('test_type', array('' => trans('messages.select-test-type'))+$testTypes, 
-							    		Request::old('testType') ? Request::old('testType') : $testType, 
+							    		
+							    		old($testType) ? old($testType) : $testType, 
 											array('class' => 'form-control', 'id' => 'test_type')) !!}
 			        </div>
 		    	</div>
@@ -69,7 +71,8 @@
 				    </div>
 					<div class="col-sm-2">
 					    {!! Form::select('period', array('' => trans('messages.select-interval'), 'M'=>trans('messages.monthly'), 'W'=>trans('messages.weekly'), 'D'=>trans('messages.daily')),
-					    	Request::old('interval') ? Request::old('interval') : $interval,  
+					    	
+					    	old($interval) ? old($interval) : $interval,  
 							array('class' => 'form-control', 'id'=>'period')) !!}
 			        </div>
 		    	</div>
@@ -190,9 +193,9 @@
 								$subtitle.= ' ('.trans("messages.weekly").') ';
 
 							if($testCategory)
-								$subtitle.= ' - '.TestCategory::find($testCategory)->name;
+								$subtitle.= ' - '.App\Models\TestCategory::find($testCategory)->name;
 							if($testType)
-								$subtitle.= '('.TestType::find($testType)->name.')';
+								$subtitle.= '('.App\Models\TestType::find($testType)->name.')';
 							echo '"'.$subtitle.'"';
 						?>
 		   },

@@ -35,7 +35,7 @@
 				</tr> 
 			</thead>
 			<tbody>
-				@foreach(Disease::all() as $disease)
+				@foreach(App\Models\Disease::all() as $disease)
 					<?php if(empty(count($disease->reportDiseases))) continue; ?>
 					<tr>
 						<td>{!! $disease->name !!}</td>

@@ -125,7 +125,6 @@
 		@if ($error!='')
 			<div class="alert alert-info">{!! $error !!}</div>
 		@else
-		<div id="test_records_div">
 			@include("reportHeader")
 			<strong>
 				<p>
@@ -156,47 +155,50 @@
 					@endif
 				</p>
 			</strong>
-			<table class="table table-bordered">
-				<tbody>
-					<tr>
-						<th>{!! trans('messages.patient-id') !!}</th>
-						<th>{!! trans('messages.visit-number') !!}</th>
-						<th>{!! trans('messages.patient-name') !!}</th>
-						<th>{!! trans('messages.specimen-number-title') !!}</th>
-						<th>{!! trans('messages.specimen') !!}</th>
-						<th>{!! trans('messages.lab-receipt-date') !!}</th>
-						<th>{!! Lang::choice('messages.test', 2) !!}</th>
-						<th>{!! trans('messages.tested-by') !!}</th>
-						<th>{!! trans('messages.test-results') !!}</th>
-						<th>{!! trans('messages.test-remarks') !!}</th>
-						<th>{!! trans('messages.results-entry-date') !!}</th>
-						<th>{!! trans('messages.verified-by') !!}</th>
-					</tr>
-					@forelse($tests as $key => $test)
-					<tr>
-						<td>{!! $test->visit->patient->id !!}</td>
-						<td>{!! isset($test->visit->visit_number)?$test->visit->visit_number:$test->visit->id !!}</td>
-						<td>{!! $test->visit->patient->name !!}</td>
-						<td>{!! $test->getSpecimenId() !!}</td>
-						<td>{!! $test->specimen->specimentype->name !!}</td>
-						<td>{!! $test->specimen->time_accepted !!}</td>
-						<td>{!! $test->testType->name !!}</td>
-						<td>{!! $test->testedBy->name or trans('messages.pending') !!}</td>
-						<td>
-							@foreach($test->testResults as $result)
-								<p>{!!Measure::find($result->measure_id)->name!!}: {!!$result->result!!}</p>
-							@endforeach
-						</td>
-						<td>{!! $test->interpretation !!}</td>
-						<td>{!! $test->time_completed or trans('messages.pending') !!}</td>
-						<td>{!! $test->verifiedBy->name or trans('messages.verification-pending') !!}</td>
-					</tr>
-					@empty
-					<tr><td colspan="12">{!!trans('messages.no-records-found')!!}</td></tr>
-					@endforelse
-				</tbody>
-			</table>
-		</div>
+			<div class="row">
+	            <div class="col-sm-12">
+					<table class="table table-bordered table-responsive">
+						<tbody>
+							<tr>
+								<th>{!! trans('messages.patient-id') !!}</th>
+								<th>{!! trans('messages.visit-number') !!}</th>
+								<th>{!! trans('messages.patient-name') !!}</th>
+								<th>{!! trans('messages.specimen-number-title') !!}</th>
+								<th>{!! trans('messages.specimen') !!}</th>
+								<th>{!! trans('messages.lab-receipt-date') !!}</th>
+								<th>{!! Lang::choice('messages.test', 2) !!}</th>
+								<th>{!! trans('messages.tested-by') !!}</th>
+								<th>{!! trans('messages.test-results') !!}</th>
+								<th>{!! trans('messages.test-remarks') !!}</th>
+								<th>{!! trans('messages.results-entry-date') !!}</th>
+								<th>{!! trans('messages.verified-by') !!}</th>
+							</tr>
+							@forelse($tests as $key => $test)
+							<tr>
+								<td>{!! $test->visit->patient->id !!}</td>
+								<td>{!! isset($test->visit->visit_number)?$test->visit->visit_number:$test->visit->id !!}</td>
+								<td>{!! $test->visit->patient->name !!}</td>
+								<td>{!! $test->getSpecimenId() !!}</td>
+								<td>{!! $test->specimen->specimentype->name !!}</td>
+								<td>{!! $test->specimen->time_accepted !!}</td>
+								<td>{!! $test->testType->name !!}</td>
+								<td>{!! $test->testedBy->name or trans('messages.pending') !!}</td>
+								<td>
+									@foreach($test->testResults as $result)
+										<p>{!!App\Models\Measure::find($result->measure_id)->name!!}: {!!$result->result!!}</p>
+									@endforeach
+								</td>
+								<td>{!! $test->interpretation !!}</td>
+								<td>{!! $test->time_completed or trans('messages.pending') !!}</td>
+								<td>{!! $test->verifiedBy->name or trans('messages.verification-pending') !!}</td>
+							</tr>
+							@empty
+							<tr><td colspan="12">{!!trans('messages.no-records-found')!!}</td></tr>
+							@endforelse
+						</tbody>
+					</table>
+				</div>
+			</div>
 		@endif
 	</div>
 </div>

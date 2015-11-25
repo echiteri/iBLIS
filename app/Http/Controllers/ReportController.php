@@ -9,11 +9,20 @@ use App\Models\Disease;
 use App\Models\Visit;
 use App\Models\Specimen;
 use App\Models\TestType;
+use App\Models\TestTypeMeasure;
+use App\Models\TestResult;
+use App\Models\Measure;
+use App\Models\SpecimenType;
+use App\Models\Control;
+use App\Models\Receipt;
+use App\Models\User;
 
 use Input;
 use Config;
 use DateTime;
 use Session;
+use DB;
+use Lang;
 
 class ReportController extends Controller {
 	//	Begin patient report functions
@@ -403,7 +412,7 @@ class ReportController extends Controller {
 			$tests = $tests->whereBetween('time_created', array($from, $toPlusOne));
 		}
 
-		$allDates = $tests->lists('time_created');
+		$allDates = $tests->lists('time_created')->toArray();
 		asort($allDates);
 		$yearMonth = function($value){return strtotime(substr($value, 0, 7));};
 		$allDates = array_map($yearMonth, $allDates);
@@ -427,13 +436,13 @@ class ReportController extends Controller {
 		$from = Input::get('start');
 		$to = Input::get('end');
 		$months = json_decode(self::getMonths($from, $to));
-		$testTypes = new Illuminate\Database\Eloquent\Collection();
+		$testTypes = null;
 
 		if($testTypeID == 0){
 			
 			$testTypes = TestType::supportPrevalenceCounts();
 		}else{
-			$testTypes->add(TestType::find($testTypeID));
+			$testTypes = TestType::find($testTypeID);
 		}
 
 		$options = '{

@@ -41,7 +41,7 @@
 	        	{!! Form::label('control', Lang::choice('messages.control',1)) !!}
 	        </div>
 	        <div class="col-md-9">
-	            {!! Form::select('control', array(null => '')+ $controls,
+	            {!! Form::select('control', array(null => '')+ $controls->toArray(),
 	            	isset($input['control'])?$input['control']:0, array('class' => 'form-control')) !!}
 	        </div>
         </div>

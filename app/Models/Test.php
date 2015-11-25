@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Eloquent\Model;
 
+use DB;
+
 class Test extends Model
 {
 	/**
@@ -620,7 +622,7 @@ class Test extends Model
 		foreach ($testTypeIds as $testTypeId) {
 
 			$testType = TestType::find($testTypeId);
-			$measureIds = array_merge($measureIds, $testType->measures->lists('id'));
+			$measureIds = array_merge($measureIds, $testType->measures->lists('id')->toArray());
 		}
 		return $measureIds;
 	}

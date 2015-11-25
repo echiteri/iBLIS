@@ -99,8 +99,8 @@
 						
 							<tr>
 								<td>{!!$i++!!}</td>
-								<td>{!!Commodity::find($row->commodity_id)->name!!}</td>
-								<td>{!!Supplier::find($row->supplier_id)->name!!}</td>
+								<td>{!!App\Models\Commodity::find($row->commodity_id)->name!!}</td>
+								<td>{!!App\Models\Supplier::find($row->supplier_id)->name!!}</td>
 								<td>{!!$row->batch_no !!}</td>
 								<td>{!!$row->quantity!!}</td>
 								<td>{!!$row->expiry_date!!}</td>
@@ -134,8 +134,8 @@
 							
 							<tr>
 								<td>{!!$i++!!}</td>
-								<td>{!!Commodity::find($row->commodity_id)->name!!}</td>
-								<td>{!!Supplier::find($row->supplier_id)->name!!}</td>
+								<td>{!!App\Models\Commodity::find($row->commodity_id)->name!!}</td>
+								<td>{!!App\Models\Supplier::find($row->supplier_id)->name!!}</td>
 								<td>{!!$row->batch_no !!}</td>
 								<td>{!!$row->quantity!!}</td>
 								<td>{!!$row->expiry_date!!}</td>

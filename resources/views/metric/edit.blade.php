@@ -3,8 +3,8 @@
 <div>
 	<ol class="breadcrumb">
 	  <li><a href="{!! route('user.home') !!}">{!!trans('messages.home')!!}</a></li>
-      <li><a href="{!! route('metric.index') !!}">{!!trans('messages.metricsList')!!}</a></li>
-	 	  <li class="active">{!! Lang::choice('messages.editMetrics',2) !!}</li>
+      <li><a href="{!! route('metric.index') !!}">{!!trans('messages.metricList')!!}</a></li>
+	 	  <li class="active">{!! Lang::choice('messages.editmetric',2) !!}</li>
 	</ol>
 </div>
 @if (Session::has('message'))
@@ -18,10 +18,10 @@
 <div class="panel panel-primary">
 	<div class="panel-heading ">
 		<span class="glyphicon glyphicon-user"></span>
-		{!! Lang::choice('messages.metrics',2) !!}
+		{!! Lang::choice('messages.metric',2) !!}
 	</div>
 	<div class="panel-body">
-		   {!! Form::model($metrics, array('route' => array('metric.update', $metrics->id),'method'=>'PUT', 'id' => 'form-edit-metrics')) !!}
+		   {!! Form::model($metric, array('route' => array('metric.update', $metric->id),'method'=>'PUT', 'id' => 'form-edit-metric')) !!}
 
             <div class="form-group">
                 {!! Form::label('name', trans('messages.unit-of-issue')) !!}

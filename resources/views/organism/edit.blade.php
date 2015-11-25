@@ -56,7 +56,7 @@
 							<div class="col-md-3">
 								<label  class="checkbox">
 									<input type="checkbox" name="drugs[]" value="{!! $value->id!!}" 
-										{!! in_array($value->id, $organism->drugs->lists('id'))?"checked":"" !!} />
+										{!! in_array($value->id, $organism->drugs->lists('id')->toArray())?"checked":"" !!} />
 										{!!$value->name !!}
 								</label>
 							</div>

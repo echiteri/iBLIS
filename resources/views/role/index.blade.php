@@ -31,9 +31,10 @@
             </thead>
             <tbody>
             @forelse($roles as $role)
-                <tr @if(Session::has('activerole'))
-                            {!!(Session::get('activerole') == $role->id)?"class='info'":""!!}
-                        @endif>
+                <tr @if(session()->has('active_role'))
+                        {!! (session('active_role') == $role->id)?"class='warning'":"" !!}
+                    @endif
+                    >
                     <td>{!! $role->name !!}</td>
                     <td>{!! $role->description !!}</td>
                     <td>

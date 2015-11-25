@@ -3,6 +3,8 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use DB;
+
 class Organism extends Model
 {
 	/**
@@ -23,7 +25,7 @@ class Organism extends Model
 	 */
 	public function drugs()
 	{
-	  return $this->belongsToMany('Drug', 'organism_drugs');
+	  return $this->belongsToMany('App\Models\Drug', 'organism_drugs');
 	}
 	/**
 	 * Set compatible drugs
@@ -53,5 +55,4 @@ class Organism extends Model
 		// Add the new mapping
 		DB::table('organism_drugs')->insert($drugsAdded);
 	}
-
 }

@@ -20,8 +20,8 @@
 				{!! HTML::ul($errors->all()) !!}
 			</div>
 		@endif
-		{!! Form::model($specimentype, array(
-				'route' => array('specimentype.update', $specimentype->id), 'method' => 'PUT',
+		{!! Form::model($specimenType, array(
+				'route' => array('specimentype.update', $specimenType->id), 'method' => 'PUT',
 				'id' => 'form-edit-specimentype'
 			)) !!}
 

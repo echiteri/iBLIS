@@ -1,5 +1,10 @@
 <?php namespace App\Http\Controllers;
 
+use Response;
+use Auth;
+use Session;
+use Lang;
+
 class SusceptibilityController extends Controller {
 
 	/**

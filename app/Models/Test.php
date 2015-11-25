@@ -32,7 +32,7 @@ class Test extends Model
 	 */
 	public function visit()
 	{
-		return $this->belongsTo('Visit');
+		return $this->belongsTo('App\Models\Visit');
 	}
 
 	/**
@@ -40,7 +40,7 @@ class Test extends Model
 	 */
 	public function testType()
 	{
-		return $this->belongsTo('TestType');
+		return $this->belongsTo('App\Models\TestType');
 	}
 
 	/**
@@ -48,7 +48,7 @@ class Test extends Model
 	 */
 	public function specimen()
 	{
-		return $this->belongsTo('Specimen');
+		return $this->belongsTo('App\Models\Specimen');
 	}
 
 	/**
@@ -56,7 +56,7 @@ class Test extends Model
 	 */
 	public function testStatus()
 	{
-		return $this->belongsTo('TestStatus');
+		return $this->belongsTo('App\Models\TestStatus');
 	}
 
 	/**
@@ -64,7 +64,7 @@ class Test extends Model
 	 */
 	public function createdBy()
 	{
-		return $this->belongsTo('User', 'created_by', 'id');
+		return $this->belongsTo('App\Models\User', 'created_by', 'id');
 	}
 	
 	/**
@@ -72,7 +72,7 @@ class Test extends Model
 	 */
 	public function testedBy()
 	{
-		return $this->belongsTo('User', 'tested_by', 'id');
+		return $this->belongsTo('App\Models\User', 'tested_by', 'id');
 	}
 
 	/**
@@ -80,7 +80,7 @@ class Test extends Model
 	 */
 	public function verifiedBy()
 	{
-		return $this->belongsTo('User', 'verified_by', 'id');
+		return $this->belongsTo('App\Models\User', 'verified_by', 'id');
 	}
 
 	/**
@@ -88,7 +88,7 @@ class Test extends Model
 	 */
 	public function testResults()
 	{
-		return $this->hasMany('TestResult');
+		return $this->hasMany('App\Models\TestResult');
 	}
 
 	/**
@@ -96,14 +96,14 @@ class Test extends Model
 	 */
 	public function culture()
 	{
-		return $this->hasMany('Culture');
+		return $this->hasMany('App\Models\Culture');
 	}
 	/**
 	 * Drug susceptibility relationship
 	 */
 	public function susceptibility()
 	{
-		return $this->hasMany('Susceptibility');
+		return $this->hasMany('App\Models\Susceptibility');
 	}
 
 	/**

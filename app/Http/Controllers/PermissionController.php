@@ -1,7 +1,15 @@
 <?php namespace App\Http\Controllers;
 
+use App\Http\Requests;
+use App\Http\Requests\PermissionRequest;
+
 use App\Models\Permission;
 use App\Models\Role;
+
+use Response;
+use Auth;
+use Session;
+use Lang;
 
 class PermissionController extends Controller {
 
@@ -54,7 +62,9 @@ class PermissionController extends Controller {
 				}
 			}
 		}
-		return Redirect::route('permission.index')->with('message', trans('messages.success-updating-permission'));
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_permission', $permission ->id);
 	}
 
 
@@ -104,6 +114,4 @@ class PermissionController extends Controller {
 	{
 		//
 	}
-
-
 }

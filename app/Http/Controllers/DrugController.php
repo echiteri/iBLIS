@@ -1,8 +1,14 @@
 <?php namespace App\Http\Controllers;
 
-use Illuminate\Database\QueryException;
+use App\Http\Requests;
+use App\Http\Requests\DrugRequest;
+
 use App\Models\Drug;
 
+use Response;
+use Auth;
+use Session;
+use Lang;
 /**
  * Contains drugs resources  
  * 
@@ -40,30 +46,15 @@ class DrugController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(DrugRequest $request)
 	{
-		//Validation
-		$rules = array('name' => 'required|unique:drugs,name');
-		$validator = Validator::make(Input::all(), $rules);
-	
-		//process
-		if($validator->fails()){
-			return Redirect::back()->withErrors($validator);
-		}else{
-			//store
-			$drug = new Drug;
-			$drug->name = Input::get('name');
-			$drug->description = Input::get('description');
-			try{
-				$drug->save();
-				$url = Session::get('SOURCE_URL');
-            
-            	return Redirect::to($url)
-					->with('message', trans('messages.success-creating-drug')) ->with('activedrug', $drug ->id);
-			}catch(QueryException $e){
-				Log::error($e);
-			}
-		}
+		$drug = new Drug;
+		$drug->name = $request->name;
+		$drug->description = $request->description;
+		$drug->save();
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_drug', $drug ->id);
 	}
 
 
@@ -104,28 +95,15 @@ class DrugController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update(DrugRequest $request, $id)
 	{
-		//Validate
-		$rules = array('name' => 'required');
-		$validator = Validator::make(Input::all(), $rules);
+		$drug = Drug::find($id);
+		$drug->name = $request->name;
+		$drug->description = $request->description;
+		$drug->save();
+		$url = session('SOURCE_URL');
 
-		// process the login
-		if ($validator->fails()) {
-			return Redirect::back()->withErrors($validator)->withInput(Input::except('password'));
-		} else {
-			// Update
-			$drug = Drug::find($id);
-			$drug->name = Input::get('name');
-			$drug->description = Input::get('description');
-			$drug->save();
-
-			// redirect
-			$url = Session::get('SOURCE_URL');
-            
-            return Redirect::to($url)
-				->with('message', trans('messages.success-updating-drug')) ->with('activetestcategory', $drug ->id);
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_drug', $drug ->id);
 	}
 
 
@@ -162,9 +140,8 @@ class DrugController extends Controller {
 		    	->with('message', trans('messages.failure-test-category-in-use'));
 		}*/
 		// redirect
-			$url = Session::get('SOURCE_URL');
-            
-            return Redirect::to($url)
-			->with('message', trans('messages.success-deleting-drug'));
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
 	}
 }

@@ -30,11 +30,10 @@
 			</thead>
 			<tbody>
 			@foreach($rejection as $key => $value)
-				<tr   @if(Session::has('activerejection'))
-                            {!!(Session::get('activerejection') == $value->id)?"class='info'":""!!}
-                        @endif
-                        >
-
+				<tr @if(session()->has('active_rejection'))
+	                    {!! (session('active_rejection') == $value->id)?"class='warning'":"" !!}
+	                @endif
+	                >
 					<td>{!! $value->reason !!}</td>
 
 					<td>

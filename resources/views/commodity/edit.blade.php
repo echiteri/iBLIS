@@ -33,7 +33,7 @@
             </div>
              <div class="form-group">
                 {!! Form::label('unit_of_issue', trans('messages.unit-of-issue')) !!}
-                {!! Form::select('unit_of_issue', array(null => '')+$metrics, $commodity->metric_id ,
+                {!! Form::select('unit_of_issue', array(null => '')+$metrics->toArray(), $commodity->metric_id ,
                     array('class' => 'form-control')) !!}
             </div>
             <div class="form-group">

@@ -32,12 +32,11 @@
 				</tr>
 			</thead>
 			<tbody>
-			@foreach($specimentypes as $key => $value)
-				<tr @if(Session::has('activespecimentype'))
-                            {!!(Session::get('activespecimentype') == $value->id)?"class='info'":""!!}
-                        @endif
-                        >
-
+			@foreach($specimenTypes as $key => $value)
+				<tr @if(session()->has('active_specimenType'))
+	                    {!! (session('active_specimenType') == $value->id)?"class='warning'":"" !!}
+	                @endif
+	                >
 					<td>{!! $value->name !!}</td>
 					<td>{!! $value->description !!}</td>
 

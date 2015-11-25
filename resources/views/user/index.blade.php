@@ -34,11 +34,10 @@
 			</thead>
 			<tbody>
 			@foreach($users as $user)
-				<tr @if(Session::has('activeuser'))
-                            {!!(Session::get('activeuser') == $user->id)?"class='info'":""!!}
-                        @endif
-                        >
-
+				<tr @if(session()->has('active_user'))
+	                    {!! (session('active_user') == $user->id)?"class='warning'":"" !!}
+	                @endif
+	                >
 					<td>{!! $user->username !!}</td>
 					<td>{!! $user->name !!}</td>
 					<td>{!! $user->email !!}</td>

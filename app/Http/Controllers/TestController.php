@@ -1,12 +1,19 @@
 <?php namespace App\Http\Controllers;
 
-use Illuminate\Database\QueryException;
+use App\Http\Requests;
+use App\Http\Requests\TestRequest;
 
 use App\Models\Test;
 use App\Models\TestStatus;
+use App\Models\Visit;
+use App\Models\Referral;
 
-use Session;
 use Input;
+use Response;
+use Auth;
+use Session;
+use Lang;
+use Config;
 /**
  * Contains test resources  
  * 
@@ -54,7 +61,7 @@ class TestController extends Controller {
 		}
 
 		// Create Test Statuses array. Include a first entry for ALL
-		$statuses = array('all')+TestStatus::all()->lists('name','id');
+		$statuses = array('all')+TestStatus::all()->lists('name','id')->toArray();
 
 		foreach ($statuses as $key => $value) {
 			$statuses[$key] = trans("messages.$value");
@@ -112,66 +119,51 @@ class TestController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function saveNewTest()
+	public function saveNewTest(TestRequest $request)
 	{
 		//Create New Test
-		$rules = array(
-			'visit_type' => 'required',
-			'physician' => 'required',
-			'testtypes' => 'required',
-		);
-		$validator = Validator::make(Input::all(), $rules);
+		$visitType = ['Out-patient','In-patient'];
+		$activeTest = array();
 
-		// process the login
-		if ($validator->fails()) {
-			return Redirect::route('test.create', 
-				array(Input::get('patient_id')))->withInput()->withErrors($validator);
-		} else {
+		/*
+		* - Create a visit
+		* - Fields required: visit_type, patient_id
+		*/
+		$visit = new Visit;
+		$visit->patient_id = $request->patient_id;
+		$visit->visit_type = $visitType[$request->visit_type];
+		$visit->save();
 
-			$visitType = ['Out-patient','In-patient'];
-			$activeTest = array();
+		/*
+		* - Create tests requested
+		* - Fields required: visit_id, test_type_id, specimen_id, test_status_id, created_by, requested_by
+		*/
+		$testTypes = $request->testtypes;
+		if(is_array($testTypes)){
+			foreach ($testTypes as $value)
+			{
+				$testTypeID = (int)$value;
+				// Create Specimen - specimen_type_id, accepted_by, referred_from, referred_to
+				$specimen = new Specimen;
+				$specimen->specimen_type_id = TestType::find($testTypeID)->specimenTypes->lists('id')[0];
+				$specimen->accepted_by = Auth::user()->id;
+				$specimen->save();
 
-			/*
-			* - Create a visit
-			* - Fields required: visit_type, patient_id
-			*/
-			$visit = new Visit;
-			$visit->patient_id = Input::get('patient_id');
-			$visit->visit_type = $visitType[Input::get('visit_type')];
-			$visit->save();
+				$test = new Test;
+				$test->visit_id = $visit->id;
+				$test->test_type_id = $testTypeID;
+				$test->specimen_id = $specimen->id;
+				$test->test_status_id = Test::PENDING;
+				$test->created_by = Auth::user()->id;
+				$test->requested_by = Input::get('physician');
+				$test->save();
 
-			/*
-			* - Create tests requested
-			* - Fields required: visit_id, test_type_id, specimen_id, test_status_id, created_by, requested_by
-			*/
-			$testTypes = Input::get('testtypes');
-			if(is_array($testTypes)){
-				foreach ($testTypes as $value) {
-					$testTypeID = (int)$value;
-					// Create Specimen - specimen_type_id, accepted_by, referred_from, referred_to
-					$specimen = new Specimen;
-					$specimen->specimen_type_id = TestType::find($testTypeID)->specimenTypes->lists('id')[0];
-					$specimen->accepted_by = Auth::user()->id;
-					$specimen->save();
-
-					$test = new Test;
-					$test->visit_id = $visit->id;
-					$test->test_type_id = $testTypeID;
-					$test->specimen_id = $specimen->id;
-					$test->test_status_id = Test::PENDING;
-					$test->created_by = Auth::user()->id;
-					$test->requested_by = Input::get('physician');
-					$test->save();
-
-					$activeTest[] = $test->id;
-				}
+				$activeTest[] = $test->id;
 			}
-
-			$url = Session::get('SOURCE_URL');
-			
-			return Redirect::to($url)->with('message', 'messages.success-creating-test')
-					->with('activeTest', $activeTest);
 		}
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_test', $test ->id);
 	}
 
 	/**

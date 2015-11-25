@@ -1,6 +1,16 @@
 <?php namespace App\Http\Controllers;
 
+use App\Http\Requests;
+use App\Http\Requests\ReceiptRequest;
+
 use App\Models\Receipt;
+use App\Models\Supplier;
+use App\Models\Commodity;
+
+use Response;
+use Auth;
+use Session;
+use Lang;
 
 class ReceiptController extends Controller {
 
@@ -23,7 +33,7 @@ class ReceiptController extends Controller {
 	 */
 	public function create()
 	{
-		$commodities = Commodity::lists('name', 'id');
+		$commodities = receipt::lists('name', 'id');
 		$suppliers = Supplier::lists('name', 'id');
 		return view('receipt.create')
 				->with('commodities', $commodities)
@@ -36,34 +46,20 @@ class ReceiptController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(ReceiptRequest $request)
 	{
-		$rules = array(
-			'commodity' => 'required',
-			'quantity' => 'required',
-			'batch_no' => 'required',
-			'supplier' => 'required',
-			'expiry_date' => 'required|date'
-		);
-		$validator = Validator::make(Input::all(), $rules);
+		$receipt = new Receipt;
+		$receipt->commodity_id = $request->commodity;
+		$receipt->supplier_id = $request->supplier;
+		$receipt->quantity = $request->quantity;
+		$receipt->batch_no = $request->batch_no;
+		$receipt->expiry_date= $request->expiry_date;
+		$receipt->user_id= Auth::user()->id;
 
-		// process the login
-		if ($validator->fails()) {
-			return Redirect::route('receipt.index')->withErrors($validator);
-				
-		} else {
-			$receipts = new Receipt;
-			$receipts->commodity_id = Input::get('commodity');
-			$receipts->supplier_id = Input::get('supplier');
-			$receipts->quantity = Input::get('quantity');
-			$receipts->batch_no = Input::get('batch_no');
-			$receipts->expiry_date= Input::get('expiry_date');
-			$receipts->user_id= Auth::user()->id;
+		$receipt->save();
+		$url = session('SOURCE_URL');
 
-			$receipts->save();
-			return Redirect::route('receipt.index')
-					->with('message', trans('messages.receipt-succesfully-added'));
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_receipt', $receipt ->id);
 	}
 
 
@@ -88,8 +84,8 @@ class ReceiptController extends Controller {
 	public function edit($id)
 	{
 		$receipt = Receipt::find($id);
-		$suppliers = Supplier::all()->lists('name', 'id');
-		$commodities = Commodity::all()->lists('name', 'id');
+		$suppliers = Supplier::lists('name', 'id');
+		$commodities = Commodity::lists('name', 'id');
 
 		return view('receipt.edit')
 				->with('receipt', $receipt)
@@ -104,37 +100,21 @@ class ReceiptController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update(ReceiptRequest $request, $id)
 	{
-		$rules = array(
-			'commodity' => 'required',
-		
-		);
-		$validator = Validator::make(Input::all(), $rules);
+		$receipt = Receipt::find($id);
+		$receipt->commodity_id = $request->commodity;
+		$receipt->supplier_id = $request->supplier;
+		$receipt->quantity = $request->quantity;
+		$receipt->batch_no = $request->batch_no;
+		$receipt->expiry_date= $request->expiry_date;
+		$receipt->user_id= Auth::user()->id;
 
-		// process the login
-		if ($validator->fails()) {
-			return Redirect::route('receipt.index')->withErrors($validator);
-				
-		} else {
-			// Update
-			$receipt = Receipt::find($id);
-			$receipt->commodity_id = Input::get('commodity');
-			$receipt->supplier_id = Input::get('supplier');
-			$receipt->quantity = Input::get('quantity');
-			$receipt->batch_no = Input::get('batch_no');
-			$receipt->expiry_date= Input::get('expiry_date');
-				
-		    $receipt->save();
-			return Redirect::route('receipt.index')
-					->with('message', trans('messages.receipt-succesfully-updated'));
-		}
+		$receipt->save();
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_receipt', $receipt ->id);
 	}
-
-
-
-
-
 	/**
 	 * Remove the specified resource from storage.
 	 *
@@ -148,9 +128,8 @@ class ReceiptController extends Controller {
 		$receipt->delete();
 
 		// redirect
-		return Redirect::route('receipt.index')
-			->with('message', trans('messages.receipt-succesfully-deleted'));
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
 	}
-
-
 }

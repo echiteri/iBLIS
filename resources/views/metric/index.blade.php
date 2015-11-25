@@ -35,7 +35,10 @@
 			</thead>
 			<tbody>
 			@foreach($metrics as $key => $value)
-				<tr>
+				<tr @if(session()->has('active_metric'))
+	                    {!! (session('active_metric') == $value->id)?"class='warning'":"" !!}
+	                @endif
+	                >
 					<td>{!! $value->name!!}</td>
 					<td>{!! $value->description!!}</td>
 					<td> 

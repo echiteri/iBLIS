@@ -33,10 +33,10 @@
 			</thead>
 			<tbody>
 			@foreach($testtypes as $key => $value)
-				<tr @if(Session::has('activetesttype'))
-                            {!!(Session::get('activetesttype') == $value->id)?"class='info'":""!!}
-                        @endif
-                        >
+				<tr @if(session()->has('active_testType'))
+	                    {!! (session('active_testType') == $testType->id)?"class='warning'":"" !!}
+	                @endif
+	                >
 					<td>{!! $value->name !!}</td>
 					<td>{!! $value->description !!}</td>
 					<td>{!! $value->targetTAT !!}</td>

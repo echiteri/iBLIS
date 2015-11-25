@@ -33,7 +33,10 @@
 			</thead>
 			<tbody>
 			@foreach($suppliers as $key => $value)
-				<tr>
+				<tr @if(session()->has('active_supplier'))
+	                    {!! (session('active_supplier') == $value->id)?"class='warning'":"" !!}
+	                @endif
+	                >
                  	<td>{!! $value->name!!}</td>
                  	<td>{!! $value->phone_no!!}</td>
                  	<td>{!! $value->physical_address!!}</td>

@@ -31,10 +31,10 @@
 			</thead>
 			<tbody>
 			@foreach($drugs as $key => $value)
-				<tr @if(Session::has('activedrug'))
-                            {!!(Session::get('activedrug') == $value->id)?"class='info'":""!!}
-                        @endif
-                        >
+				<tr @if(session()->has('active_drug'))
+	                    {!! (session('active_drug') == $value->id)?"class='warning'":"" !!}
+	                @endif
+	                >
 
 					<td>{!! $value->name !!}</td>
 					<td>{!! $value->description !!}</td>

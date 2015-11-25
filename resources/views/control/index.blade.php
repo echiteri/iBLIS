@@ -31,7 +31,10 @@
 			</thead>
 			<tbody>
 			@foreach($controls as $control)
-				<tr>
+				<tr @if(session()->has('active_control'))
+	                    {!! (session('active_control') == $control->id)?"class='warning'":"" !!}
+	                @endif
+	                >
 					<td>{!! $control->name !!}</td>
 					<td>{!! '$control->lot->number' !!}</td>
 					<td>

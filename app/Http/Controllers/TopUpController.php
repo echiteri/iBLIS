@@ -1,9 +1,17 @@
 <?php namespace App\Http\Controllers;
 
+use App\Http\Requests;
+use App\Http\Requests\TopUpRequestRequest;
+
 use App\Models\TopupRequest;
-use App\Models\Commodity;
 use App\Models\TestCategory;
 use App\Models\Receipt;
+use App\Models\Commodity;
+
+use Response;
+use Auth;
+use Session;
+use Lang;
 
 class TopUpController extends Controller {
 
@@ -42,31 +50,18 @@ class TopUpController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(TopupRequestRequest $request)
 	{
-		$rules = array(
-			'commodity' => 'required',
-			'lab_section' => 'required',
-			'order_quantity' => 'required'
-		);
-		$validator = Validator::make(Input::all(), $rules);
+		$labTopup = new TopupRequest;
+		$labTopup->commodity_id = $request->commodity;
+		$labTopup->test_category_id = $request->lab_section;
+		$labTopup->order_quantity = $request->order_quantity;
+		$labTopup->remarks = $request->remarks;
+		$labTopup->user_id = Auth::user()->id;
+		$labTopup->save();
+		$url = session('SOURCE_URL');
 
-		// process the login
-		if ($validator->fails()) {
-		return Redirect::route('topup.index')->withErrors($validator);
-		} else {
-			// store
-			$labTopup = new TopupRequest;
-			$labTopup->commodity_id = Input::get('commodity');
-			$labTopup->test_category_id = Input::get('lab_section');
-			$labTopup->order_quantity = Input::get('order_quantity');
-			$labTopup->remarks = Input::get('remarks');
-			$labTopup->user_id = Auth::user()->id;
-			$labTopup->save();
-
-			return Redirect::route('topup.index')
-				->with('message', 'Successfully added');
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_topUp', $labTopup ->id);
 	}
 
 
@@ -106,25 +101,18 @@ class TopUpController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update(TopupRequestRequest $request, $id)
 	{
-		$rules = array(
-			'commodity' => 'required',
-			'order_quantity' => 'required',
-			'lab_section' => 'required'
-		);
-		// Update
 		$labTopup = TopupRequest::find($id);
-		$labTopup->commodity_id = Input::get('commodity');
-		$labTopup->test_category_id = Input::get('lab_section');
-		$labTopup->order_quantity = Input::get('order_quantity');
+		$labTopup->commodity_id = $request->commodity;
+		$labTopup->test_category_id = $request->lab_section;
+		$labTopup->order_quantity = $request->order_quantity;
+		$labTopup->remarks = $request->remarks;
 		$labTopup->user_id = Auth::user()->id;
-		$labTopup->remarks = Input::get('remarks');
-
 		$labTopup->save();
+		$url = session('SOURCE_URL');
 
-		return Redirect::route('topup.index')
-				->with('message', 'Successfully updated');
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_topUp', $labTopup ->id);
 	}
 
 
@@ -137,19 +125,20 @@ class TopUpController extends Controller {
 	public function delete($id)
 	{
 		//Soft delete the patient
-		$commodity = TopupRequest::find($id);
-		$commodity->delete();
+		$topUp = TopupRequest::find($id);
+		$topUp->delete();
 
 		// redirect
-		return Redirect::route('topup.index')
-			->with('message', 'The commodity was successfully deleted!');
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
 	}
 
 	/**
 	* for autofilling issue form, from db data
 	*/
 	public function availableStock($id){
-		$receipt = Commodity::find($id)->available();
+		$receipt = TopupRequest::find($id)->available();
 		return Response::json(array('availableStock' => $receipt));
 	}
 }

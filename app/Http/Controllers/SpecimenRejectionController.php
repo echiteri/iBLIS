@@ -1,7 +1,14 @@
 <?php namespace App\Http\Controllers;
 
-use Illuminate\Database\QueryException;
+use App\Http\Requests;
+use App\Http\Requests\RejectionReasonRequest;
+
 use App\Models\RejectionReason;
+
+use Response;
+use Auth;
+use Session;
+use Lang;
 
 /**
  * Contains functions for managing specimen rejection  
@@ -37,27 +44,14 @@ class SpecimenRejectionController extends Controller {
      * Store a newly created resource in storage.
      * @return Response
      */
-    public function store()
+    public function store(RejectionReasonRequest $request)
     {
-        $rules = array('reason'=> 'required');
+        $rejection = new RejectionReason;
+        $rejection->reason = $request->reason;
+        $rejection->save();
+        $url = session('SOURCE_URL');
 
-        $validator = Validator::make(Input::all(), $rules);
-
-        // process the login
-        if ($validator->fails()) {
-            return Redirect::route("specimenrejection.create")
-                ->withErrors($validator);
-        } else {
-            // store
-            $rejection = new RejectionReason;
-            $rejection->reason = Input::get('reason');
-            $rejection->save();
-        }
-            $url = Session::get('SOURCE_URL');
-            
-            return Redirect::to($url)
-            
-            ->with('message', trans('messages.success-creating-rejection-reason'));
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_rejection', $rejection ->id);
     }
 
     /**
@@ -80,27 +74,14 @@ class SpecimenRejectionController extends Controller {
      * @param  int  $id
      * @return Response
      */
-    public function update($id)
+    public function update(RejectionReasonRequest $request, $id)
     {
-        $rules = array('reason' => 'required');
+        $rejection = RejectionReason::find($id);
+        $rejection->reason = $request->reason;
+        $rejection->save();
+        $url = session('SOURCE_URL');
 
-        $validator = Validator::make(Input::all(), $rules);
-
-        // process the login
-        if ($validator->fails()) {
-            return Redirect::back()->withErrors($validator);
-        } else {
-            // Update
-            $rejection = RejectionReason::find($id);
-            $rejection->reason = Input::get('reason');
-            $rejection->save();
-
-            // redirect
-            $url = Session::get('SOURCE_URL');
-            
-            return Redirect::to($url)
-                    ->with('message', trans('messages.success-updating-rejection-reason')) ->with('activerejection', $rejection->id);
-        }
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_rejection', $rejection ->id);
     }
 
     /**
@@ -125,9 +106,8 @@ class SpecimenRejectionController extends Controller {
                 ->with('message', trans('messages.failure-specimen-rejection-reason-in-use'));
         }
         // redirect
-            $url = Session::get('SOURCE_URL');
-            
-            return Redirect::to($url)
-            ->with('message', trans('messages.success-deleting-rejection-reason'));
+        $url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
     }
 }

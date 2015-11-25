@@ -1,8 +1,14 @@
 <?php namespace App\Http\Controllers;
 
-use Illuminate\Database\QueryException;
+use App\Http\Requests;
+use App\Http\Requests\InstrumentRequest;
+
 use App\Models\Instrument;
 use Config;
+use Response;
+use Auth;
+use Session;
+use Lang;
 
 /**
  *Contains functions for managing instruments
@@ -43,29 +49,18 @@ class InstrumentController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(InstrumentRequest $resquest)
 	{
-		//
-		$rules = array(
-			'name' => 'required',
-			'ip' => 'sometimes|ip',
-		);
-		$validator = Validator::make(Input::all(), $rules);
+		$newInstrument = new Instrument();
+		$newInstrument->name = $resquest->name;
+		$newInstrument->description = $resquest->description;
+		$newInstrument->ip = $resquest->ip;
+		$newInstrument->hostname = $resquest->hostname;
 
-		// Validate form input
-		if ($validator->fails()) {
-			return Redirect::route('instrument.create')->withErrors($validator);
-		} else {
-			// Save the instrument
-			$newInstrument = new Instrument();
-			$newInstrument->name = Input::get('name');
-			$newInstrument->description = Input::get('description');
-			$newInstrument->ip = Input::get('ip');
-			$newInstrument->hostname = Input::get('hostname');
+		$newInstrument->save();
+		$url = session('SOURCE_URL');
 
-			$newInstrument->save();
-			return Redirect::route('instrument.index')->with('message', trans('messages.success-creating-instrument'));
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_instrument', $newInstrument ->id);
 	}
 
 	/**
@@ -104,36 +99,17 @@ class InstrumentController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update(InstrumentRequest $resquest, $id)
 	{
-		//
-		$rules = array(
-			'name' => 'required',
-			'ip' => 'required|ip'
-		);
-		$validator = Validator::make(Input::all(), $rules);
+		$instrument = Instrument::find($id);
+		$instrument->name = $resquest->name;
+		$instrument->description = $resquest->description;
+		$instrument->ip = $resquest->ip;
+		$instrument->hostname = $resquest->hostname;
+		$instrument->save();
+		$url = session('SOURCE_URL');
 
-		// process the login
-		if ($validator->fails()) {
-			return Redirect::back()->withErrors($validator);
-		} else {
-			// Update
-			$instrument = Instrument::find($id);
-			$instrument->name = Input::get('name');
-			$instrument->description = Input::get('description');
-			$instrument->ip = Input::get('ip');
-			$instrument->hostname = Input::get('hostname');
-
-			try{
-				$instrument->save();
-				$message = trans('messages.success-updating-instrument');
-			}catch(QueryException $e){
-				$message = trans('messages.failure-updating-instrument');
-				Log::error($e);
-			}
-
-			return Redirect::route('instrument.index')->with('message', $message);
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_instrument', $instrument ->id);
 	}
 
 	/**
@@ -162,7 +138,9 @@ class InstrumentController extends Controller {
 		$instrument->delete();
 
 		// redirect
-		return Redirect::route('instrument.index')->with('message', trans('messages.success-deleting-instrument'));
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
 	}
 
 	/**

@@ -18,7 +18,7 @@ class Visit extends Model
 	 */
     public function tests()
     {
-        return $this->hasMany('Test');
+        return $this->hasMany('App\Models\Test');
     }
 
 	/**
@@ -26,6 +26,6 @@ class Visit extends Model
 	 */
 	public function patient()
 	{
-		return $this->belongsTo('Patient');
+		return $this->belongsTo('App\Models\Patient');
 	}
 }

@@ -1,9 +1,16 @@
 <?php namespace App\Http\Controllers;
 
+use App\Http\Requests;
+use App\Http\Requests\LotRequest;
+
 use App\Models\Lot;
 use App\Models\Instrument;
 
 use Input;
+use Response;
+use Auth;
+use Session;
+use Lang;
 
 class LotController extends Controller {
 
@@ -36,29 +43,18 @@ class LotController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(LotRequest $request)
 	{
-		//Validation
-		$rules = array('number' => 'required|unique:lots,number',
-					'instrument' => 'required|non_zero_key');
-		$validator = Validator::make(Input::all(), $rules);
+		$lot = new Lot;
+		$lot->number = $request->number;
+		$lot->description = $request->description;
+		$lot->expiry = $request->expiry;
+		$lot->instrument_id = $request->instrument;
 
-		if ($validator->fails()) {
-			return Redirect::route('lot.create')->withErrors($validator)->withInput();
-		} else {
-			// Add
-			$lot = new Lot;
-			$lot->number = Input::get('number');
-			$lot->description = Input::get('description');
-			$lot->expiry = Input::get('expiry');
-			$lot->instrument_id = Input::get('instrument');
+		$lot->save();
+		$url = session('SOURCE_URL');
 
-			$lot->save();
-
-			$url = Session::get('SOURCE_URL');
-			return Redirect::to($url)
-					->with('message', trans('messages.successfully-created-lot'));
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_lot', $lot ->id);
 	}
 
 
@@ -95,29 +91,18 @@ class LotController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update(LotRequest $request, $id)
 	{
-		//Validation
-		$rules = array('number' => 'required',
-					'instrument' => 'required|non_zero_key');
-		$validator = Validator::make(Input::all(), $rules);
+		$lot = Lot::find($id);
+		$lot->number = $request->number;
+		$lot->description = $request->description;
+		$lot->expiry = $request->expiry;
+		$lot->instrument_id = $request->instrument;
 
-		if ($validator->fails()) {
-			return Redirect::to('lot/'.$id.'/edit')->withErrors($validator)->withInput();
-		} else {
-			// Add
-			$lot = Lot::find($id);
-			$lot->number = Input::get('number');
-			$lot->description = Input::get('description');
-			$lot->expiry = Input::get('expiry');
-			$lot->instrument_id = Input::get('instrument');
+		$lot->save();
+		$url = session('SOURCE_URL');
 
-			$lot->save();
-
-			$url = Session::get('SOURCE_URL');
-			return Redirect::to($url)
-					->with('message', trans('messages.successfully-updated-lot'));
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_lot', $lot ->id);
 	}
 
 
@@ -146,8 +131,8 @@ class LotController extends Controller {
 		$lot->delete();
 
 		// redirect
-		return Redirect::route('lot.index')->with('message', trans('messages.success-deleting-lot'));
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
 	}
-
-
 }

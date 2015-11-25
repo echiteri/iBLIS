@@ -24,8 +24,8 @@
 		   {!! Form::open(array('route' => 'metric.store', 'id' => 'form-store_metrics')) !!}
 
             <div class="form-group">
-                {!! Form::label('unit-of-issue', trans('messages.unit-of-issue')) !!}
-                {!! Form::text('unit-of-issue', old('unit-of-issue'), array('class' => 'form-control', 'rows' => '2')) !!}
+                {!! Form::label('name', trans('messages.unit-of-issue')) !!}
+                {!! Form::text('name', old('name'), array('class' => 'form-control', 'rows' => '2')) !!}
             </div>
              <div class="form-group">
                 {!! Form::label('description', trans('messages.description')) !!}

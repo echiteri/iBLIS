@@ -1,10 +1,16 @@
 <?php namespace App\Http\Controllers;
 
-use Illuminate\Database\QueryException;
+use App\Http\Requests;
+use App\Http\Requests\PatientRequest;
+
 use App\Models\Patient;
 use Config;
 use Input;
-
+use DB;
+use Response;
+use Auth;
+use Session;
+use Lang;
 /**
  *Contains functions for managing patient records 
  *
@@ -47,43 +53,22 @@ class PatientController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(PatientRequest $request)
 	{
-		//
-		$rules = array(
-			'patient_number' => 'required|unique:patients,patient_number',
-			'name'       => 'required',
-			'gender' => 'required',
-			'dob' => 'required'
-		);
-		$validator = Validator::make(Input::all(), $rules);
+		$patient = new Patient;
+		$patient->patient_number = $request->patient_number;
+		$patient->name = $request->name;
+		$patient->gender = $request->gender;
+		$patient->dob = $request->dob;
+		$patient->email = $request->email;
+		$patient->address = $request->address;
+		$patient->phone_number = $request->phone_number;
+		$patient->created_by = Auth::user()->id;
 
-		if ($validator->fails()) {
+		$patient->save();
+        $url = session('SOURCE_URL');
 
-			return Redirect::back()->withErrors($validator)->withInput(Input::all());
-		} else {
-			// store
-			$patient = new Patient;
-			$patient->patient_number = Input::get('patient_number');
-			$patient->name = Input::get('name');
-			$patient->gender = Input::get('gender');
-			$patient->dob = Input::get('dob');
-			$patient->email = Input::get('email');
-			$patient->address = Input::get('address');
-			$patient->phone_number = Input::get('phone_number');
-			$patient->created_by = Auth::user()->id;
-
-			try{
-				$patient->save();
-			$url = Session::get('SOURCE_URL');
-			return Redirect::to($url)
-			->with('message', 'Successfully created patient!');
-			}catch(QueryException $e){
-				Log::error($e);
-			}
-			
-			// redirect
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_patient', $patient ->id);
 	}
 
 	/**
@@ -98,7 +83,7 @@ class PatientController extends Controller {
 		$patient = Patient::find($id);
 
 		//Show the view and pass the $patient to it
-		return view('patient.show')->with('patient', $patient);
+		return view('patient.show', compact('patient'));
 	}
 
 	/**
@@ -113,7 +98,7 @@ class PatientController extends Controller {
 		$patient = Patient::find($id);
 
 		//Open the Edit View and pass to it the $patient
-		return view('patient.edit')->with('patient', $patient);
+		return view('patient.edit', compact('patient'));
 	}
 
 	/**
@@ -122,41 +107,22 @@ class PatientController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update(PatientRequest $request, $id)
 	{
-		//
-		$rules = array(
-			'patient_number' => 'required',
-			'name'       => 'required',
-			'gender' => 'required',
-			'dob' => 'required'
-		);
-		$validator = Validator::make(Input::all(), $rules);
+		$patient = Patient::find($id);
+		$patient->patient_number = $request->patient_number;
+		$patient->name = $request->name;
+		$patient->gender = $request->gender;
+		$patient->dob = $request->dob;
+		$patient->email = $request->email;
+		$patient->address = $request->address;
+		$patient->phone_number = $request->phone_number;
+		$patient->created_by = Auth::user()->id;
+		
+		$patient->save();
+        $url = session('SOURCE_URL');
 
-		// process the login
-		if ($validator->fails()) {
-			return Redirect::to('patient/' . $id . '/edit')
-				->withErrors($validator)
-				->withInput(Input::except('password'));
-		} else {
-			// Update
-			$patient = Patient::find($id);
-			$patient->patient_number = Input::get('patient_number');
-			$patient->name = Input::get('name');
-			$patient->gender = Input::get('gender');
-			$patient->dob = Input::get('dob');
-			$patient->email = Input::get('email');
-			$patient->address = Input::get('address');
-			$patient->phone_number = Input::get('phone_number');
-			$patient->created_by = Auth::user()->id;
-			$patient->save();
-
-			// redirect
-			$url = Session::get('SOURCE_URL');
-			return Redirect::to($url)
-			->with('message', 'The patient details were successfully updated!') ->with('activepatient',$patient ->id);
-
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-updated', 1))->with('active_patient', $patient ->id);
 	}
 
 	/**
@@ -184,9 +150,9 @@ class PatientController extends Controller {
 		$patient->delete();
 
 		// redirect
-			$url = Session::get('SOURCE_URL');
-			return Redirect::to($url)
-			->with('message', 'The commodity was successfully deleted!');
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
 	}
 
 	/**
@@ -198,5 +164,4 @@ class PatientController extends Controller {
 	{
         return Patient::search(Input::get('text'))->take(Config::get('kblis.limit-items'))->get()->toJson();
 	}
-
 }

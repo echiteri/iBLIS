@@ -79,7 +79,7 @@
             </div>
         </div>
         <div class="panel-body">
-            <table class="table table-striped table-hover table-condensed">
+            <table class="table table-striped table-bordered table-hover table-condensed search-table">
                 <thead>
                     <tr>
                         <th>{!!trans('messages.date-ordered')!!}</th>
@@ -95,11 +95,10 @@
                 </thead>
                 <tbody>
                 @foreach($testSet as $key => $test)
-                    <tr 
-                        @if(Session::has('activeTest'))
-                            {!! in_array($test->id, Session::get('activeTest'))?"class='info'":""!!}
-                        @endif
-                        >
+                    <tr @if(session()->has('active_test'))
+                        {!! (session('active_test') == $test->id)?"class='warning'":"" !!}
+                    @endif
+                    >
                         <td>{!! date('d-m-Y H:i', strtotime($test->time_created));!!}</td>  <!--Date Ordered-->
                         <td>{!! empty($test->visit->patient->external_patient_number)?
                                 $test->visit->patient->patient_number:
@@ -156,9 +155,9 @@
                                         @elseif($test->specimen->isReferred())
                                             <span class='label label-primary'>
                                                 {!!trans('messages.specimen-referred-label') !!}
-                                                @if($test->specimen->referral->status == Referral::REFERRED_IN)
+                                                @if($test->specimen->referral->status == App\Models\Referral::REFERRED_IN)
                                                     {!! trans("messages.in") !!}
-                                                @elseif($test->specimen->referral->status == Referral::REFERRED_OUT)
+                                                @elseif($test->specimen->referral->status == App\Models\Referral::REFERRED_OUT)
                                                     {!! trans("messages.out") !!}
                                                 @endif
                                             </span>

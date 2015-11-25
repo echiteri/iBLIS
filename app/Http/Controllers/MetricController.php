@@ -1,6 +1,14 @@
 <?php namespace App\Http\Controllers;
 
+use App\Http\Requests;
+use App\Http\Requests\MetricRequest;
+
 use App\Models\Metric;
+
+use Response;
+use Auth;
+use Session;
+use Lang;
 
 class MetricController extends Controller {
 
@@ -27,28 +35,15 @@ class MetricController extends Controller {
 		return view('metric.create');
 	}
 
-	public function store()
+	public function store(MetricRequest $request)
 	{
-		//
-		$rules = array(
-			'unit-of-issue' => 'required|unique:metrics,name');
-		$validator = Validator::make(Input::all(), $rules);
+		$metric = new Metric;
+		$metric->name = $request->name;
+		$metric->description = $request->description;
+		$metric->save();
+		$url = session('SOURCE_URL');
 
-		if ($validator->fails()) {
-			return Redirect::route('metric.index')->withErrors($validator);
-		} else {
-			// store
-			$metric = new Metric;
-			$metric->name= Input::get('unit-of-issue');
-			$metric->description= Input::get('description');
-			try{
-				$metric->save();
-				$url = Session::get('SOURCE_URL');
-				return Redirect::route('metric.index') ->with('message', trans('messages.metric-succesfully-added'));
-			}catch(QueryException $e){
-				Log::error($e);
-			}
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_metric', $metric ->id);
 	}
 
 	/**
@@ -59,10 +54,10 @@ class MetricController extends Controller {
 	 */
 	public function edit($id)
 	{
-		$metrics = Metric::find($id);
+		$metric = Metric::find($id);
 
 		//Open the Edit View and pass to it the $patient
-		return view('metric.edit')->with('metrics', $metrics);
+		return view('metric.edit')->with('metric', $metric);
 	}
 
 
@@ -72,29 +67,15 @@ class MetricController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update(MetricRequest $request, $id)
 	{
-		//Validate
-		$rules = array('name' => 'required');
-		$validator = Validator::make(Input::all(), $rules);
+		$metric = Metric::find($id);
+		$metric->name = $request->name;
+		$metric->description = $request->description;
+		$metric->save();
+		$url = session('SOURCE_URL');
 
-		// process the login
-		if ($validator->fails()) {
-			return Redirect::route('metric.index')->withErrors($validator);
-		} else {
-		// Update
-			$metric = Metric::find($id);
-			$metric->name= Input::get('unit-of-issue');
-			$metric->description= Input::get('description');
-				
-		try{
-			$metric->save();
-			return Redirect::route('metric.index')
-			->with('message', trans('messages.success-updating-metric'))->with('activemetric', $metric ->id);
-			}catch(QueryException $e){
-				Log::error($e);
-			}
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_metric', $metric ->id);
 	}
 
 	/**
@@ -110,6 +91,8 @@ class MetricController extends Controller {
 		$metric->delete();
 
 		// redirect
-		return Redirect::route('metric.index')->with('message', trans('messages.metric-succesfully-deleted'));
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
 	}
 }

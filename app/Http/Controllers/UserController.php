@@ -1,9 +1,15 @@
 <?php namespace App\Http\Controllers;
 
-use Illuminate\Support\MessageBag;
+use App\Http\Requests;
+use App\Http\Requests\UserRequest;
+
 use App\Models\User;
 
 use Input;
+use Response;
+use Auth;
+use Session;
+use Lang;
 /**
  *Contains functions for managing users 
  *
@@ -80,58 +86,33 @@ class UserController extends Controller {
      *
      * @return Response
      */
-    public function store()
+    public function store(UserRequest $request)
     {
-        //
-        $rules = array(
-            'username' => 'alpha_num|required|unique:users,username|min:6',
-            'password' => 'confirmed|required|min:6',
-            'full_name' => 'required',
-            'email' => 'required|email'
-        );
-        $validator = Validator::make(Input::all(), $rules);
+        $user = new User;
+        $user->username = $request->username;
+        $user->name = $request->full_name;
+        $user->gender = $request->gender;
+        $user->designation = $request->designation;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
 
-        // process the login
-        if ($validator->fails()) {
-            return Redirect::route('user.create')
-                ->withErrors($validator)
-                ->withInput(Input::except('password'));
-        } else {
-            // store
-            $user = new User;
-            $user->username = Input::get('username');
-            $user->name = Input::get('full_name');
-            $user->gender = Input::get('gender');
-            $user->designation = Input::get('designation');
-            $user->email = Input::get('email');
-            $user->password = Hash::make(Input::get('password'));
+        $user->save();
+        $id = $user->id;
 
-            $user->save();
-            $id = $user->id;
+        if (Input::hasFile('image')) {
+            try {
+                $extension = Input::file('image')->getClientOriginalExtension();
+                $destination = public_path().'/i/users/';
+                $filename = "user-$id.$extension";
 
-            if (Input::hasFile('image')) {
-                try {
-                    $extension = Input::file('image')->getClientOriginalExtension();
-                    $destination = public_path().'/i/users/';
-                    $filename = "user-$id.$extension";
+                $file = Input::file('image')->move($destination, $filename);
+                $user->image = "/i/users/$filename";
 
-                    $file = Input::file('image')->move($destination, $filename);
-                    $user->image = "/i/users/$filename";
-
-                } catch (Exception $e) {}
-            }
-
-            try{
-                $user->save();
-                return Redirect::route('user.index')->with('message', trans('messages.success-creating-user'));
-            }catch(QueryException $e){
-                Log::error($e);
-                return Redirect::route('user.index')
-                    ->with('message', trans('messages.failure-creating-user'));
-            }
-            
-            // redirect
+            } catch (Exception $e) {}
         }
+        $url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_user', $user->id);
     }
 
     /**
@@ -170,60 +151,34 @@ class UserController extends Controller {
      * @param  int  $id
      * @return Response
      */
-    public function update($id)
+    public function update(UserRequest $request, $id)
     {
-        //
-        $rules = array(
-            'full_name'       => 'required',
-            'email' => 'required|email',
-            'image' => 'image|max:500'
-        );
+        dd($request);
+        $user = User::find($id);
+        $user->username = $request->username;
+        $user->name = $request->full_name;
+        $user->gender = $request->gender;
+        $user->designation = $request->designation;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
 
-        if (Input::get('reset-password')) {
-            $rules['reset-password'] = 'min:6';
+        $user->save();
+        $id = $user->id;
+
+        if (Input::hasFile('image')) {
+            try {
+                $extension = Input::file('image')->getClientOriginalExtension();
+                $destination = public_path().'/i/users/';
+                $filename = "user-$id.$extension";
+
+                $file = Input::file('image')->move($destination, $filename);
+                $user->image = "/i/users/$filename";
+
+            } catch (Exception $e) {}
         }
+        $url = session('SOURCE_URL');
 
-        $validator = Validator::make(Input::all(), $rules);
-
-        // process the login
-        if ($validator->fails()) {
-            return Redirect::route('user.edit', array($id))
-                ->withErrors($validator)
-                ->withInput(Input::except('password'));
-        } else {
-            // Update
-            $user = User::find($id);
-            $user->name = Input::get('full_name');
-            $user->gender = Input::get('gender');
-            $user->designation = Input::get('designation');
-            $user->email = Input::get('email');
-
-            if (Input::hasFile('image')) {
-                try {
-                    $extension = Input::file('image')->getClientOriginalExtension();
-                    $destination = public_path().'/i/users/';
-                    $filename = "user-$id.$extension";
-
-                    $file = Input::file('image')->move($destination, $filename);
-                    $user->image = "/i/users/$filename";
-
-                } catch (Exception $e) {
-                    Log::error($e);
-                }
-            }
-            
-            //Resetting passwords - by the administrator
-            if (Input::get('reset-password')) {
-                $user->password = Hash::make(Input::get('reset-password'));
-            }
-
-            $user->save();
-
-            // redirect
-            $url = Session::get('SOURCE_URL');
-            
-            return Redirect::to($url)->with('message', trans('messages.user-profile-edit-success')) ->with('activeuser', $user ->id);
-        }
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_user', $user ->id);
     }
 
     /**
@@ -291,8 +246,8 @@ class UserController extends Controller {
         $user->delete();
 
         // redirect
-        $url = Session::get('SOURCE_URL');
-            
-        return Redirect::to($url)->with('message', trans('messages.success-deleting-user'));
+        $url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
     }
 }

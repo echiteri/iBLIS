@@ -1,7 +1,19 @@
 <?php namespace App\Http\Controllers;
 
-use Illuminate\Database\QueryException;
+use App\Http\Requests;
+use App\Http\Requests\TestTypeRequest;
+
 use App\Models\TestType;
+use App\Models\Measure;
+use App\Models\MeasureType;
+use App\Models\SpecimenType;
+use App\Models\TestCategory;
+use App\Models\Organism;
+
+use Response;
+use Auth;
+use Session;
+use Lang;
 
 /**
  *Contains functions for managing test types
@@ -50,49 +62,29 @@ class TestTypeController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(TestTypeRequest $request)
 	{
-		//
-		$rules = array(
-			'name' => 'required|unique:test_types,name',
-			'test_category_id' => 'required|non_zero_key',
-			'specimentypes' => 'required',
-			'new-measures' => 'required',
-		);
-		$validator = Validator::make(Input::all(), $rules);
-			//array to be split here and sent to appropriate place! man! with ids and all possibilities
+		$testType = new TestType;
+		$testType->name = trim($request->name);
+		$testType->description = $request->description;
+		$testType->test_category_id = $request->test_category_id;
+		$testType->targetTAT = $request->targetTAT;
+		$testType->prevalence_threshold = $request->prevalence_threshold;
+		$testType->orderable_test = $request->orderable_test;
+		$testType->accredited = $request->accredited;
 
-		// process the login
-		if ($validator->fails()) {
-			return Redirect::route('testtype.create')->withErrors($validator);
-		} else {
-			// store 
-			$testtype = new TestType;
-			$testtype->name = trim(Input::get('name'));
-			$testtype->description = Input::get('description');
-			$testtype->test_category_id = Input::get('test_category_id');
-			$testtype->targetTAT = Input::get('targetTAT');
-			$testtype->prevalence_threshold = Input::get('prevalence_threshold');
-			$testtype->orderable_test = Input::get('orderable_test');
-			$testtype->accredited = Input::get('accredited');
-			try{
-				$testtype->save();
-				$measureIds = array();
-				$inputNewMeasures = Input::get('new-measures');
-				
-				$measures = New MeasureController;
-				$measureIds = $measures->store($inputNewMeasures);
-				$testtype->setMeasures($measureIds);
-				$testtype->setSpecimenTypes(Input::get('specimentypes'));
-				$testtype->setOrganisms(Input::get('organisms'));
+		$testType->save();
+		$measureIds = array();
+		$inputNewMeasures = $request->new_measures;
+		
+		$measures = New MeasureController;
+		$measureIds = $measures->store($inputNewMeasures);
+		$testType->setMeasures($measureIds);
+		$testType->setSpecimenTypes($request->specimentypes);
+		$testType->setOrganisms($request->organisms);
+		$url = session('SOURCE_URL');
 
-				return Redirect::route('testtype.index')
-					->with('message', trans('messages.success-creating-test-type'));
-
-			}catch(QueryException $e){
-				Log::error($e);
-			}
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_testType', $testType ->id);
 	}
 
 	/**
@@ -104,10 +96,10 @@ class TestTypeController extends Controller {
 	public function show($id)
 	{
 		//Show a testtype
-		$testtype = TestType::find($id);
+		$testType = TestType::find($id);
 
 		//Show the view and pass the $testtype to it
-		return view('testtype.show')->with('testtype', $testtype);
+		return view('testtype.show')->with('testType', $testType);
 	}
 
 	/**
@@ -143,61 +135,41 @@ class TestTypeController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update(TestTypeRequest $request, $id)
 	{
-		$rules = array(
-			'name' => 'required',
-			'test_category_id' => 'required|non_zero_key',
-			'specimentypes' => 'required',
-		);
-		$validator = Validator::make(Input::all(), $rules);
+		$testtype = TestType::find($id);
+		$testType->name = trim($request->name);
+		$testType->description = $request->description;
+		$testType->test_category_id = $request->test_category_id;
+		$testType->targetTAT = $request->targetTAT;
+		$testType->prevalence_threshold = $request->prevalence_threshold;
+		$testType->orderable_test = $request->orderable_test;
+		$testType->accredited = $request->accredited;
+		$testType->save();
 
-		// process the login
-		if ($validator->fails()) {
-			return Redirect::back()->withErrors($validator);
-		} else {
-			// Update
-			$testtype = TestType::find($id);
-			$testtype->name = trim(Input::get('name'));
-			$testtype->description = Input::get('description');
-			$testtype->test_category_id = Input::get('test_category_id');
-			$testtype->targetTAT = Input::get('targetTAT');
-			$testtype->prevalence_threshold = Input::get('prevalence_threshold');
-			$testtype->orderable_test = Input::get('orderable_test');
-			$testtype->accredited = Input::get('accredited');
+		$testtype->setOrganisms($request->organisms);
+		$testtype->setSpecimenTypes($request->specimentypes);
+		$measureIds = array();
+		if ($request->new_measures) {
+			$inputNewMeasures = $request->new_measures;
 
-			try{
-				$testtype->save();
-				$testtype->setOrganisms(Input::get('organisms'));
-				$testtype->setSpecimenTypes(Input::get('specimentypes'));
-				$measureIds = array();
-					if (Input::get('new-measures')) {
-						$inputNewMeasures = Input::get('new-measures');
-
-						$measures = New MeasureController;
-						$measureIds = $measures->store($inputNewMeasures);
-					}
-
-					if (Input::get('measures')) {
-						$inputMeasures = Input::get('measures');
-						foreach($inputMeasures as $key => $value)
-						{
-						  $measureIds[] = $key;
-						}
-						$measures = New MeasureController;
-						$measures->update($inputMeasures);
-					}
-					$testtype->setMeasures($measureIds);
-			}catch(QueryException $e){
-				Log::error($e);
-			}
-
-			// redirect
-			$url = Session::get('SOURCE_URL');
-            
-            return Redirect::to($url)
-						->with('message', trans('messages.success-updating-test-type'))->with('activetesttype', $testtype ->id);
+			$measures = New MeasureController;
+			$measureIds = $measures->store($inputNewMeasures);
 		}
+
+		if ($request->measures) {
+			$inputMeasures = $request->measures;
+			foreach($inputMeasures as $key => $value)
+			{
+			  $measureIds[] = $key;
+			}
+			$measures = New MeasureController;
+			$measures->update($inputMeasures);
+		}
+		$testtype->setMeasures($measureIds);
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_testType', $testType ->id);
 	}
 
 	/**
@@ -232,7 +204,8 @@ class TestTypeController extends Controller {
 		    	->with('message', 'messages.failure-test-type-in-use');
 		}
 		// redirect
-		return Redirect::route('testtype.index')
-			->with('message', trans('messages.success-deleting-test-type'));
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
 	}
 }

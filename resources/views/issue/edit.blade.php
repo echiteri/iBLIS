@@ -24,12 +24,12 @@
          {!! Form::model($issue, array('route' => array('issue.update', $issue->id), 'method' => 'PUT', 'id' => 'form-edit-issue')) !!}
            <div class="form-group">
                 {!! Form::label('commodity', trans('messages.commodity')) !!}
-                 {!! Form::select('commodity', array(null => '')+ $commodities, $issue->topupRequest->commodity_id, 
+                 {!! Form::select('commodity', array(null => '')+ $commodities->toArray(), $issue->topupRequest->commodity_id, 
                     array('class' => 'form-control')) !!}
             </div>
              <div class="form-group">
                 {!! Form::label('batch_no', trans('messages.batch-no')) !!}
-                {!! Form::select('batch_no', array(null => '')+ $batches, $issue->receipt->id,
+                {!! Form::select('batch_no', array(null => '')+ $batches->toArray(), $issue->receipt->id,
                     array('class' => 'form-control', 'rows' => '2')) !!}
             </div>
             <div class="form-group">
@@ -46,12 +46,12 @@
             </div>
             <div class="form-group">
                 {!! Form::label('lab_section ', trans('messages.destination')) !!}
-                {!! Form::select('lab_section', array(null => '')+ $sections, $issue->topupRequest->test_category_id,
+                {!! Form::select('lab_section', array(null => '')+ $sections->toArray(), $issue->topupRequest->test_category_id,
                     array('class' => 'form-control', 'rows' => '2')) !!}
             </div>
             <div class="form-group">
                 {!! Form::label('issued_to', trans('messages.receivers-name')) !!}
-                {!! Form::select('issued_to', array(null => '')+ $users, $issue->receiver->id,
+                {!! Form::select('issued_to', array(null => '')+ $users->toArray(), $issue->receiver->id,
                     array('class' => 'form-control', 'rows' => '2')) !!}
             </div>
             <div class="form-group">

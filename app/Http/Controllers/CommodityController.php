@@ -1,6 +1,16 @@
 <?php namespace App\Http\Controllers;
 
+use App\Http\Requests;
+
+use Illuminate\Http\Request;
+use App\Http\Requests\CommodityRequest;
+
 use App\Models\Commodity;
+use App\Models\Metric;
+
+use Auth;
+use Session;
+use Lang;
 
 class CommodityController extends Controller {
 
@@ -22,43 +32,23 @@ class CommodityController extends Controller {
 		return view('commodity.create')->with('metrics', $metrics);
 	}
 
-	public function store()
+	public function store(CommodityRequest $request)
 	{
-		//
-		$rules = array(
-		'name' => 'required|unique:commodities,name',
-		'description' => 'required',
-		'unit_price' => 'required|numeric',
-		'item_code' => 'required',
-		'storage_req' => 'required',
-		'min_level' => 'required|numeric',
-		'max_level' => 'required|numeric',);
-		$validator = Validator::make(Input::all(), $rules);
+		$commodity = new Commodity;
+		$commodity->name = $request->name;
+		$commodity->description = $request->description;
+		$commodity->metric_id = $request->unit_of_issue;
+		$commodity->unit_price = $request->unit_price;
+		$commodity->item_code = $request->item_code;
+		$commodity->storage_req = $request->storage_req;
+		$commodity->min_level = $request->min_level;
+		$commodity->max_level = $request->max_level;
 
-		if ($validator->fails()) {
-			return Redirect::back()->withErrors($validator);
-		} else {
-			// store
-			$commodity = new Commodity;
-			$commodity->name= Input::get('name');
-			$commodity->description= Input::get('description');
-			$commodity->metric_id= Input::get('unit_of_issue');
-			$commodity->unit_price= Input::get('unit_price');
-			$commodity->item_code = Input::get('item_code');
-			$commodity->storage_req = Input::get('storage_req');
-			$commodity->min_level = Input::get('min_level');
-			$commodity->max_level = Input::get('max_level');
+		$commodity->save();
+        $url = session('SOURCE_URL');
 
-			try{
-				$commodity->save();
-				return Redirect::route('commodity.index')
-					->with('message', trans('messages.commodity-succesfully-added'));
-			}catch(QueryException $e){
-				Log::error($e);
-			}
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_commodity', $commodity ->id);
 	}
-
 
 	/**
 	 * Display the specified resource.
@@ -83,7 +73,7 @@ class CommodityController extends Controller {
 		$metrics = Metric::orderBy('name', 'ASC')->lists('name', 'id');
 		$commodity = Commodity::find($id);
 
-		//Open the Edit View and pass to it the $patient
+		//Open the Edit View and pass to it the $commodity
 		return view('commodity.edit')->with('metrics', $metrics)->with('commodity', $commodity);
 	}
 
@@ -93,38 +83,22 @@ class CommodityController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update(CommodityRequest $request, $id)
 	{
-		//Validate
-		$rules = array(
-		'name' => 'required',
-);
-		$validator = Validator::make(Input::all(), $rules);
+		$commodity = Commodity::find($id);
+		$commodity->name = $request->name;
+		$commodity->description = $request->description;
+		$commodity->metric_id = $request->unit_of_issue;
+		$commodity->unit_price = $request->unit_price;
+		$commodity->item_code = $request->item_code;
+		$commodity->storage_req = $request->storage_req;
+		$commodity->min_level = $request->min_level;
+		$commodity->max_level = $request->max_level;
 
-		// process the validation
-		if ($validator->fails()) {
-			return Redirect::back()->withErrors($validator)->withInput(Input::except('password'));
-		} else {
-		// Update
-			$commodity = Commodity::find($id);
-			$commodity->name= Input::get('name');
-			$commodity->description= Input::get('description');
-			$commodity->metric_id= Input::get('unit_of_issue');
-			$commodity->unit_price= Input::get('unit_price');
-			$commodity->item_code= Input::get('item_code');
-			$commodity->storage_req= Input::get('storage_req');
-			$commodity->min_level= Input::get('min_level');
-			$commodity->max_level= Input::get('max_level');
+		$commodity->save();
+        $url = session('SOURCE_URL');
 
-			
-		try{
-			$commodity->save();
-			return Redirect::route('commodity.index')
-			->with('message', trans('messages.success-updating-commodity'))->with('activecommodity', $commodity ->id);
-			}catch(QueryException $e){
-				Log::error($e);
-			}
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_commodity', $commodity ->id);
 	}
 
 	/**
@@ -140,6 +114,8 @@ class CommodityController extends Controller {
 		$commodity->delete();
 
 		// redirect
-		return Redirect::route('commodity.index')->with('message', trans('messages.commodity-succesfully-deleted'));
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
 	}
 }

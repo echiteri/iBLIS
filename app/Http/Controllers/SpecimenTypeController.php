@@ -1,7 +1,14 @@
 <?php namespace App\Http\Controllers;
 
-use Illuminate\Database\QueryException;
+use App\Http\Requests;
+use App\Http\Requests\SpecimenTypeRequest;
+
 use App\Models\SpecimenType;
+
+use Response;
+use Auth;
+use Session;
+use Lang;
 
 /**
  * Contains functions for managing specimen types  
@@ -17,10 +24,10 @@ class SpecimenTypeController extends Controller {
 	public function index()
 	{
 		// List all the active specimentypes
-			$specimentypes = SpecimenType::orderBy('name', 'ASC')->get();
+			$specimenTypes = SpecimenType::orderBy('name', 'ASC')->get();
 
 		// Load the view and pass the specimentypes
-		return view('specimentype.index')->with('specimentypes', $specimentypes);
+		return view('specimentype.index')->with('specimenTypes', $specimenTypes);
 	}
 
 	/**
@@ -39,32 +46,15 @@ class SpecimenTypeController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(SpecimenTypeRequest $request)
 	{
-		//
-		$rules = array('name' => 'required|unique:specimen_types,name');
-		$validator = Validator::make(Input::all(), $rules);
+		$specimenType = new SpecimenType;
+		$specimenType->name = $request->name;
+		$specimenType->description = $request->description;
+		$specimenType->save();
+		$url = session('SOURCE_URL');
 
-		// process the login
-		if ($validator->fails()) {
-			return Redirect::back()->withErrors($validator);
-		} else {
-			// store
-			$specimentype = new SpecimenType;
-			$specimentype->name = Input::get('name');
-			$specimentype->description = Input::get('description');
-
-			try{
-				$specimentype->save();
-			$url = Session::get('SOURCE_URL');
-			return Redirect::to($url)
-                    ->with('message', trans('messages.success-creating-specimen-type'));
-			}catch(QueryException $e){
-                Log::error($e);
-			}
-			
-			// redirect
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_specimenType', $specimenType ->id);
 	}
 
 	/**
@@ -76,10 +66,10 @@ class SpecimenTypeController extends Controller {
 	public function show($id)
 	{
 		//Show a specimentype
-		$specimentype = SpecimenType::find($id);
+		$specimenType = SpecimenType::find($id);
 
 		//Show the view and pass the $specimentype to it
-		return view('specimentype.show')->with('specimentype', $specimentype);
+		return view('specimentype.show')->with('specimenType', $specimenType);
 	}
 
 	/**
@@ -91,10 +81,10 @@ class SpecimenTypeController extends Controller {
 	public function edit($id)
 	{
 		//Get the specimentype
-		$specimentype = SpecimenType::find($id);
+		$specimenType = SpecimenType::find($id);
 
 		//Open the Edit View and pass to it the $specimentype
-		return view('specimentype.edit')->with('specimentype', $specimentype);
+		return view('specimentype.edit')->with('specimenType', $specimenType);
 	}
 
 	/**
@@ -103,29 +93,15 @@ class SpecimenTypeController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update(SpecimenTypeRequest $request, $id)
 	{
-		//
-		$rules = array('name' => 'required');
-		$validator = Validator::make(Input::all(), $rules);
+		$specimenType = SpecimenType::find($id);
+		$specimenType->name = $request->name;
+		$specimenType->description = $request->description;
+		$specimenType->save();
+		$url = session('SOURCE_URL');
 
-		// process the login
-		if ($validator->fails()) {
-			return Redirect::back()->withErrors($validator);
-		} else {
-			// Update
-			$specimentype = SpecimenType::find($id);
-			$specimentype->name = Input::get('name');
-			$specimentype->description = Input::get('description');
-			$specimentype->save();
-
-			// redirect
-			$url = Session::get('SOURCE_URL');
-			
-			return Redirect::to($url)
-			->with('message', trans('messages.success-updating-specimen-type'))->with('activespecimentype', $specimentype ->id);
-		
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_specimenType', $specimenType ->id);
 	}
 
 	/**
@@ -148,21 +124,20 @@ class SpecimenTypeController extends Controller {
 	public function delete($id)
 	{
 		//Soft delete the specimentype
-		$specimentype = SpecimenType::find($id);
-		$inUseByTesttype = $specimentype->testTypes->toArray();
-		$inUseBySpecimen = $specimentype->specimen->toArray();
+		$specimenType = SpecimenType::find($id);
+		$inUseByTesttype = $specimenType->testTypes->toArray();
+		$inUseBySpecimen = $specimenType->specimen->toArray();
 		if (empty($inUseByTesttype) && empty($inUseBySpecimen)) {
 		    // The specimen type is not in use
-			$specimentype->delete();
+			$specimenType->delete();
 		} else {
 		    // The specimen type is in use
 		    return Redirect::route('specimentype.index')
 		    	->with('message', trans('messages.failure-specimen-type-in-use'));
 		}
 		// redirect
-		  $url = Session::get('SOURCE_URL');
-			
-			return Redirect::to($url)
-			->with('message', trans('messages.success-updating-specimen-type'));
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
 	}
 }

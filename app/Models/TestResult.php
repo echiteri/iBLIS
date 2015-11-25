@@ -23,7 +23,7 @@ class TestResult extends Model
 	 */
 	public function test()
 	{
-		return $this->belongsTo('Test');
+		return $this->belongsTo('App\Models\Test');
 	}
 	/*
 	*	Counts for microbiology - count organisms per specimen type
@@ -47,6 +47,6 @@ class TestResult extends Model
 	*/
 	public function measure()
 	{
-		return $this->belongsTo('Measure');
+		return $this->belongsTo('App\Models\Measure');
 	}
 }

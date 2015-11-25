@@ -39,7 +39,10 @@
 			</thead>
 			<tbody>
 			@foreach($commodities as $commodity)
-				<tr>
+				<tr @if(session()->has('active_commodity'))
+                    {!! (session('active_commodity') == $commodity->id)?"class='warning'":"" !!}
+                @endif
+                >
                  	<td>{!! $commodity->name!!}</td>
                  	<td>{!! $commodity->description!!}</td>
                  	<td>{!! $commodity->metric->name !!}</td>

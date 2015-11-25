@@ -1,9 +1,16 @@
 <?php namespace App\Http\Controllers;
 
+use App\Http\Requests;
+use App\Http\Requests\RoleRequest;
+
 use App\Models\Role;
 use App\Models\User;
 
 use Config;
+use Response;
+use Auth;
+use Session;
+use Lang;
 
 class RoleController extends Controller {
 
@@ -77,32 +84,15 @@ class RoleController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(RoleRequest $request)
 	{
-		$rules = array('name' => 'required|unique:roles|min:3', 'description' => 'max:200');
-		$validator = Validator::make(Input::all(), $rules);
+		$role = new Role;
+		$role->name = $request->name;
+		$role->description = $request->description;
+		$role->save();
+		$url = session('SOURCE_URL');
 
-		if($validator->fails())
-		{
-			return Redirect::route('role.create')->withInput()->withErrors($validator);
-		}
-		else
-		{
-			$role = new Role;
-			$role->name = Input::get('name');
-			$role->description = Input::get('description');
-
-			try
-			{
-				$role->save();
-				$url = Session::get('SOURCE_URL');
-				return Redirect::to($url)->with('message', trans('messages.success-adding-role'));
-			}
-			catch (QueryException $e)
-			{
-				Log::error($e);
-			}
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_role', $role ->id);
 	}
 
 	/**
@@ -135,33 +125,15 @@ class RoleController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update(RoleRequest $request, $id)
 	{
-		$rules = array('name' => "required|unique:roles,name,$id|min:3", 'description' => 'max:200');
-		$validator = Validator::make(Input::all(), $rules);
+		$role = Role::find($id);
+		$role->name = $request->name;
+		$role->description = $request->description;
+		$role->save();
+		$url = session('SOURCE_URL');
 
-		if($validator->fails())
-		{
-			return Redirect::route('role.edit', array($id))->withInput()->withErrors($validator);
-		}
-		else
-		{
-			$role = Role::find($id);
-			$role->name = Input::get('name');
-			$role->description = Input::get('description');
-
-			try
-			{
-				$role->save();
-				$url = Session::get('SOURCE_URL');
-				return Redirect::to($url)->with('message', trans('messages.success-updating-role'))
-							->with('activerole', $role ->id);
-			}
-			catch (QueryException $e)
-			{
-				Log::error($e);
-			}
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_role', $role ->id);
 	}
 
 	/**
@@ -176,10 +148,9 @@ class RoleController extends Controller {
         $role = Role::find($id);
         $role->delete();
         // redirect
+		$url = session('SOURCE_URL');
 
-        $url = Session::get('SOURCE_URL');
-			
-		return Redirect::to($url)->with('message', trans('messages.success-deleting-role'));
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
 	}
 
 	/**
@@ -192,6 +163,4 @@ class RoleController extends Controller {
 	{
 		//
 	}
-
-
 }

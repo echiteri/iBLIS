@@ -29,7 +29,7 @@ class Patient extends Model
 	 */
     public function visits()
     {
-        return $this->hasMany('Visit');
+        return $this->hasMany('App\Models\Visit');
     }
 
 	/**

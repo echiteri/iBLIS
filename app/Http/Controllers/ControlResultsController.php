@@ -1,5 +1,10 @@
 <?php namespace App\Http\Controllers;
 
+use Response;
+use Auth;
+use Session;
+use Lang;
+use Input;
 class ControlResultsController extends Controller {
 
 	
@@ -26,9 +31,8 @@ class ControlResultsController extends Controller {
 			$controlResult->control_test_id = $controlTestId;
 			$controlResult->save();
 		}
-		return Redirect::route('control.resultsIndex')->with('message', trans('messages.success-updating-control-result'));
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-updated', 1));
 	}
-
-
-
 }

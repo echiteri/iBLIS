@@ -41,10 +41,7 @@
 				{!! Form::label('specimen_types', trans('messages.select-specimen-types')) !!}
 				<div class="form-pane panel panel-default">
 					<div class="container-fluid">
-						<?php 
-							$cnt = 0;
-							$zebra = "";
-						?>
+						<?php $cnt = 0; $zebra = ""; ?>
 						@foreach($specimentypes as $key=>$value)
 							{!! ($cnt%4==0)?"<div class='row $zebra'>":"" !!}
 							<?php
@@ -54,7 +51,7 @@
 							<div class="col-md-3">
 								<label  class="checkbox">
 									<input type="checkbox" name="specimentypes[]" value="{!! $value->id!!}" 
-										{!! in_array($value->id, $testtype->specimenTypes->lists('id'))?"checked":"" !!} />
+										{!! in_array($value->id, $testtype->specimenTypes->lists('id')->toArray())?"checked":"" !!} />
 										{!!$value->name !!}
 								</label>
 							</div>
@@ -105,7 +102,7 @@
 							<div class="col-md-3">
 								<label  class="checkbox">
 									<input type="checkbox" name="organisms[]" value="{!! $val->id!!}" 
-										{!! in_array($val->id, $testtype->organisms->lists('id'))?"checked":"" !!} >
+										{!! in_array($val->id, $testtype->organisms->lists('id')->toArray())?"checked":"" !!} >
 										{!! $val->name !!}
 								</label>
 							</div>

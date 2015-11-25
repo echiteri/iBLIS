@@ -32,7 +32,7 @@ class Specimen extends Model
 	 */
 	public function testPhase()
 	{
-		return $this->belongsTo('TestPhase');
+		return $this->belongsTo('App\Models\TestPhase');
 	}
 	
 	/**
@@ -40,7 +40,7 @@ class Specimen extends Model
 	 */
 	public function specimenStatus()
 	{
-		return $this->belongsTo('SpecimenStatus');
+		return $this->belongsTo('App\Models\SpecimenStatus');
 	}
 	
 	/**
@@ -48,7 +48,7 @@ class Specimen extends Model
 	 */
 	public function specimenType()
 	{
-		return $this->belongsTo('SpecimenType');
+		return $this->belongsTo('App\Models\SpecimenType');
 	}
 	
 	/**
@@ -56,7 +56,7 @@ class Specimen extends Model
 	 */
 	public function rejectionReason()
 	{
-		return $this->belongsTo('RejectionReason');
+		return $this->belongsTo('App\Models\RejectionReason');
 	}
 
 	/**
@@ -64,7 +64,7 @@ class Specimen extends Model
 	 */
 	public function test()
     {
-        return $this->hasOne('Test');
+        return $this->hasOne('App\Models\Test');
     }
 
     /**
@@ -72,7 +72,7 @@ class Specimen extends Model
 	 */
 	public function referral()
     {
-        return $this->belongsTo('Referral');
+        return $this->belongsTo('App\Models\Referral');
     }
     
     /**
@@ -80,7 +80,7 @@ class Specimen extends Model
 	 */
 	public function acceptedBy()
 	{
-		return $this->belongsTo('User', 'accepted_by', 'id');
+		return $this->belongsTo('App\Models\User', 'accepted_by', 'id');
 	}
 
 	/**
@@ -88,7 +88,7 @@ class Specimen extends Model
 	 */
 	public function rejectedBy()
 	{
-		return $this->belongsTo('User', 'rejected_by', 'id');
+		return $this->belongsTo('App\Models\User', 'rejected_by', 'id');
 	}
 
     /**

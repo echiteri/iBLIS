@@ -3,9 +3,9 @@
 
 	<div>
 		<ol class="breadcrumb">
-		  <li><a href="{!! rotue('user.home') !!}">{!! trans('messages.home') !!}</a></li>
+		  <li><a href="{!! route('user.home') !!}">{!! trans('messages.home') !!}</a></li>
 		  <li>
-		  	<a href="{!! rotue('specimenrejection.index') !!}">{!! trans('messages.specimen-rejection') !!}</a>
+		  	<a href="{!! route('specimenrejection.index') !!}">{!! trans('messages.specimen-rejection') !!}</a>
 		  </li>
 		  <li class="active">{!!trans('messages.add-rejection-reason')!!}</li>
 		</ol>

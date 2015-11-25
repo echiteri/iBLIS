@@ -1,7 +1,14 @@
 <?php namespace App\Http\Controllers;
 
-use Illuminate\Database\QueryException;
+use App\Http\Requests;
+use App\Http\Requests\TestCategoryRequest;
+
 use App\Models\TestCategory;
+
+use Response;
+use Auth;
+use Session;
+use Lang;
 
 /**
  * Contains test categories a.k.a lab sections
@@ -38,32 +45,15 @@ class TestCategoryController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(TestCategoryRequest $request)
 	{
-		//Validation
-		$rules = array('name' => 'required|unique:test_categories,name');
-		$validator = Validator::make(Input::all(), $rules);
-	
-		//process
-		if($validator->fails()){
-			$url = Session::get('SOURCE_URL');
-            
-            	return Redirect::to($url)->withErrors($validator);
-		}else{
-			//store
-			$testcategory = new TestCategory;
-			$testcategory->name = Input::get('name');
-			$testcategory->description = Input::get('description');
-			try{
-				$testcategory->save();
-				$url = Session::get('SOURCE_URL');
-            
-            	return Redirect::to($url)
-					->with('message', trans('messages.success-creating-test-category')) ->with('activetestcategory', $testcategory ->id);
-			}catch(QueryException $e){
-				Log::error($e);
-			}
-		}
+		$testCategory = new TestCategory;
+		$testCategory->name = $request->name;
+		$testCategory->description = $request->description;
+		$testCategory->save();
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_testCategory', $testCategory ->id);
 	}
 
 	/**
@@ -101,28 +91,15 @@ class TestCategoryController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update(TestCategoryRequest $request, $id)
 	{
-		//Validate
-		$rules = array('name' => 'required');
-		$validator = Validator::make(Input::all(), $rules);
+		$testCategory = TestCategory::find($id);
+		$testCategory->name = $request->name;
+		$testCategory->description = $request->description;
+		$testCategory->save();
+		$url = session('SOURCE_URL');
 
-		// process the login
-		if ($validator->fails()) {
-			return Redirect::back()->withErrors($validator)->withInput(Input::except('password'));
-		} else {
-			// Update
-			$testcategory = TestCategory::find($id);
-			$testcategory->name = Input::get('name');
-			$testcategory->description = Input::get('description');
-			$testcategory->save();
-
-			// redirect
-			$url = Session::get('SOURCE_URL');
-            
-            return Redirect::to($url)
-				->with('message', trans('messages.success-updating-test-category')) ->with('activetestcategory', $testcategory ->id);
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_testCategory', $testCategory ->id);
 	}
 
 	/**
@@ -159,15 +136,8 @@ class TestCategoryController extends Controller {
 		    	->with('message', trans('messages.failure-test-category-in-use'));
 		}
 		// redirect
-			$url = Session::get('SOURCE_URL');
-            
-            return Redirect::to($url)
-			->with('message', trans('messages.success-deleting-test-category'));
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
 	}
 }
-
-
-
-
-
-

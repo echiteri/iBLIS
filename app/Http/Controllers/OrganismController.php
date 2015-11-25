@@ -1,7 +1,15 @@
 <?php namespace App\Http\Controllers;
 
+use App\Http\Requests;
+use App\Http\Requests\OrganismRequest;
+
 use App\Models\Organism;
 use App\Models\Drug;
+
+use Response;
+use Auth;
+use Session;
+use Lang;
 
 class OrganismController extends Controller {
 
@@ -37,33 +45,18 @@ class OrganismController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(OrganismRequest $request)
 	{
-		//Validation
-		$rules = array('name' => 'required|unique:organisms,name');
-		$validator = Validator::make(Input::all(), $rules);
-	
-		//process
-		if($validator->fails()){
-			return Redirect::back()->withErrors($validator);
-		}else{
-			//store
-			$organism = new Organism;
-			$organism->name = Input::get('name');
-			$organism->description = Input::get('description');
-			try{
-				$organism->save();
-				if(Input::get('drugs')){
-					$organism->setDrugs(Input::get('drugs'));
-				}
-				$url = Session::get('SOURCE_URL');
-            
-            	return Redirect::to($url)
-					->with('message', trans('messages.success-creating-organism')) ->with('activeorganism', $organism ->id);
-			}catch(QueryException $e){
-				Log::error($e);
-			}
+		$organism = new Organism;
+		$organism->name = $request->name;
+		$organism->description = $request->description;
+		$organism->save();
+		if($request->drugs){
+			$organism->setDrugs($request->drugs);
 		}
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_organism', $organism ->id);
 	}
 
 
@@ -107,35 +100,18 @@ class OrganismController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update(OrganismRequest $request, $id)
 	{
-		//Validate
-		$rules = array('name' => 'required');
-		$validator = Validator::make(Input::all(), $rules);
-
-		// process the login
-		if ($validator->fails()) {
-			return Redirect::back()->withErrors($validator);
-		} else {
-			// Update
-			$organism = Organism::find($id);
-			$organism->name = Input::get('name');
-			$organism->description = Input::get('description');
-			try{
-				$organism->save();
-				if(Input::get('drugs')){
-					$organism->setDrugs(Input::get('drugs'));
-				}
-			}catch(QueryException $e){
-				Log::error($e);
-			}
-
-			// redirect
-			$url = Session::get('SOURCE_URL');
-            
-            return Redirect::to($url)
-				->with('message', trans('messages.success-updating-organism')) ->with('activeorganism', $organism ->id);
+		$organism = Organism::find($id);
+		$organism->name = $request->name;
+		$organism->description = $request->description;
+		$organism->save();
+		if($request->drugs){
+			$organism->setDrugs($request->drugs);
 		}
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_organism', $organism ->id);
 	}
 
 
@@ -172,9 +148,8 @@ class OrganismController extends Controller {
 		    	->with('message', trans('messages.failure-test-category-in-use'));
 		}*/
 		// redirect
-			$url = Session::get('SOURCE_URL');
-            
-            return Redirect::to($url)
-			->with('message', trans('messages.success-deleting-organism'));
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
 	}
 }

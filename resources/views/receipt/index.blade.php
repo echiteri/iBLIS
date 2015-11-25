@@ -38,7 +38,10 @@
 			</thead>
 			<tbody>
 			@foreach($receipts as $key => $receipt)
-			<tr>
+				<tr @if(session()->has('active_receipt'))
+	                    {!! (session('active_receipt') == $receipt->id)?"class='warning'":"" !!}
+	                @endif
+	                >
 					<td>{!! $receipt->created_at!!}</td>
 					<td>{!! $receipt->commodity->name !!}</td>
 					<td>{!! $receipt->supplier->name !!}</td>

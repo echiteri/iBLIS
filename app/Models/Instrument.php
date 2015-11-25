@@ -16,7 +16,7 @@ class Instrument extends Model
 	 */
 	public function testTypes()
 	{
-	  return $this->belongsToMany('TestType', 'instrument_testtypes');
+	  return $this->belongsToMany('App\Models\TestType', 'instrument_testtypes');
 	}
 
 	/**
@@ -207,6 +207,6 @@ class Instrument extends Model
 	 */
 	public function lots()
 	{
-	  return $this->hasMany('Lot');
+	  return $this->hasMany('App\Models\Lot');
 	}
 }

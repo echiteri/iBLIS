@@ -41,7 +41,10 @@
 			</thead>
 			<tbody>
 			@foreach($instruments as $key => $value)
-				<tr>
+				<tr @if(session()->has('active_instrument'))
+	                    {!! (session('active_instrument') == $value->id)?"class='warning'":"" !!}
+	                @endif
+	                >
 					<td>{!! $value->name !!}</td>
 					<td>{!! $value->ip !!}</td>
 					<td>{!! $value->hostname !!}</td>

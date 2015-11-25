@@ -57,10 +57,10 @@
 			</thead>
 			<tbody>
 			@foreach($patients as $key => $patient)
-				<tr  @if(Session::has('activepatient'))
-						{!!(Session::get('activepatient') == $patient->id)?"class='info'":""!!}
-					@endif
-				>
+				<tr @if(session()->has('active_patient'))
+                    {!! (session('active_patient') == $patient->id)?"class='warning'":"" !!}
+                @endif
+                >
 					<td>{!! $patient->patient_number !!}</td>
 					<td>{!! $patient->name !!}</td>
 					<td>{!! $patient->email !!}</td>

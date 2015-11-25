@@ -1,6 +1,14 @@
 <?php namespace App\Http\Controllers;
 
+use App\Http\Requests;
+use App\Http\Requests\ControlRequest;
+
 use App\Models\Control;
+
+use Response;
+use Auth;
+use Session;
+use Lang;
 
 class ControlController extends Controller {
 
@@ -35,33 +43,22 @@ class ControlController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(ControlRequest $request)
 	{
-		//Validation -checking that name is unique among the un soft-deleted ones
-		$rules = array('name' => 'required|unique:controls,name,NULL,id,deleted_at,null',
-		 			'lot' => 'required|non_zero_key',
-		 			'new-measures' => 'required');
-		$validator = Validator::make(Input::all(), $rules);
+		$control = new Control;
+		$control->name = $request->name;
+		$control->description = $request->description;
+		$control->lot_id = $request->lot;
 
-		if ($validator->fails()) {
-			return Redirect::route('control.create')->withErrors($validator)->withInput();
-		} else {
-			// Add
-			$control = new Control;
-			$control->name = Input::get('name');
-			$control->description = Input::get('description');
-			$control->lot_id = Input::get('lot');
-
-			if (Input::get('new-measures')) {
-					$newMeasures = Input::get('new-measures');
-					$controlMeasure = New ControlMeasureController;
-					$controlMeasure->saveMeasuresRanges($newMeasures, $control);
-			}
-			// redirect
-			return Redirect::to('control')
-					->with('message', trans('messages.successfully-added-control'))
-					->with('activeControl', $control ->id);
+		if (Input::get('new-measures')) {
+			$newMeasures = Input::get('new-measures');
+			$controlMeasure = New ControlMeasureController;
+			$controlMeasure->saveMeasuresRanges($newMeasures, $control);
 		}
+		$control->save();
+        $url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_control', $control ->id);
 	}
 
 
@@ -99,39 +96,27 @@ class ControlController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update(ControlRequest $request, $id)
 	{
-		$rules = array(
-			'name' => 'unique:controls,name,NULL,id,deleted_at,null',
-			'lot' => 'required|non_zero_key',
-			'measures' => 'required',
-		);
-		$validator = Validator::make(Input::all(), $rules);
+		$$control = Control::find($id);
+		$control->name = $request->name;
+		$control->description = $request->description;
+		$control->lot_id = $request->lot;
 
-		// process the login
-		if ($validator->fails()) {
-			return Redirect::back()->withErrors($validator)->withInput();
-		} else {
-			// Update
-			$control = Control::find($id);
-			$control->name = Input::get('name');
-			$control->description = Input::get('description');
-			$control->lot_id = Input::get('lot');
-
-			if (Input::get('new-measures')) {
-				$inputNewMeasures = Input::get('new-measures');
-				$measures = New ControlMeasureController;
-				$measureIds = $measures->saveMeasuresRanges($inputNewMeasures, $control);
-			}
-
-			if (Input::get('measures')) {
-				$inputMeasures = Input::get('measures');
-				$measures = New ControlMeasureController;
-				$measures->editMeasuresRanges($inputMeasures, $control);
-			}
-			// redirect
-			return Redirect::back()->with('message', trans('messages.success-updating-control'));
+		if (Input::get('new-measures')) {
+			$inputNewMeasures = Input::get('new-measures');
+			$measures = New ControlMeasureController;
+			$measureIds = $measures->saveMeasuresRanges($inputNewMeasures, $control);
 		}
+
+		if (Input::get('measures')) {
+			$inputMeasures = Input::get('measures');
+			$measures = New ControlMeasureController;
+			$measures->editMeasuresRanges($inputMeasures, $control);
+		}
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_control', $control ->id);
 	}
 
 
@@ -146,8 +131,9 @@ class ControlController extends Controller {
 		//Delete the control
 		$control = Control::find($id);
 		$control->delete();
-		// redirect
-		return Redirect::route('control.index')->with('message', trans('messages.success-deleting-control'));
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
 	}
 
 	/**
@@ -219,6 +205,8 @@ class ControlController extends Controller {
 			$controlResult->control_test_id = $controlTest->id;
 			$controlResult->save();
 		}
-		return Redirect::route('control.resultsIndex')->with('message', trans('messages.success-adding-control-result'));
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1));
 	}
 }

@@ -1,6 +1,14 @@
 <?php namespace App\Http\Controllers;
 
+use App\Http\Requests;
+use App\Http\Requests\SupplierRequest;
+
 use App\Models\Supplier;
+
+use Response;
+use Auth;
+use Session;
+use Lang;
 
 class SupplierController extends Controller {
 
@@ -31,31 +39,17 @@ class SupplierController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(SupplierRequest $request)
 	{
-		//
-		$rules = array(
-			'name' => 'required|unique:suppliers,name');
-		$validator = Validator::make(Input::all(), $rules);
+		$supplier = new Supplier;
+		$supplier->name = $request->name;
+		$supplier->phone_no = $request->phone_no;
+		$supplier->email = $request->email;
+		$supplier->physical_address = $request->physical_address;
+		$supplier->save();
+		$url = session('SOURCE_URL');
 
-		
-		if ($validator->fails()) {
-			return Redirect::back()->withErrors($validator);
-		} else {
-			// store
-			$supplier = new Supplier;
-			$supplier->name= Input::get('name');
-			$supplier->phone_no= Input::get('phone_no');
-			$supplier->email= Input::get('email');
-			$supplier->physical_address= Input::get('physical_address');
-			try{
-				$supplier->save();
-				return Redirect::route('supplier.index')
-					->with('message',  'Successifully added a new supplier');
-			}catch(QueryException $e){
-				Log::error($e);
-			}
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_supplier', $supplier ->id);
 	}
 
 
@@ -92,32 +86,18 @@ class SupplierController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
-	{//Validate
-		$rules = array('name' => 'required');
-		$validator = Validator::make(Input::all(), $rules);
+	public function update(SupplierRequest $request, $id)
+	{
+		$supplier = Supplier::find($id);
+		$supplier->name = $request->name;
+		$supplier->phone_no = $request->phone_no;
+		$supplier->email = $request->email;
+		$supplier->physical_address = $request->physical_address;
+		$supplier->save();
+		$url = session('SOURCE_URL');
 
-		// process the login
-		if ($validator->fails()) {
-			return Redirect::to('supplier.edit')->withErrors($validator)->withInput(Input::except('password'));
-		} else {
-		// Update
-			$supplier = Supplier::find($id);
-			$supplier->name= Input::get('name');
-			$supplier->physical_address= Input::get('physical_address');
-			$supplier->phone_no= Input::get('phone_no');
-			$supplier->email= Input::get('email');
-			$supplier->save();
-			try{
-				$supplier->save();
-				return Redirect::route('supplier.index')
-				->with('message', trans('messages.success-updating-supplier')) ->with('activesupplier', $supplier ->id);
-			}catch(QueryException $e){
-				Log::error($e);
-			}
-		}
-			
-		}	
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_supplier', $supplier ->id);		
+	}	
 	/**
 	 * Remove the specified resource from storage.
 	 *
@@ -131,6 +111,8 @@ class SupplierController extends Controller {
 		$supplier->delete();
 
 		// redirect
-		return Redirect::route('supplier.index')->with('message', trans('messages.supplier-succesfully-deleted'));
+		$url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
 	}
 }

@@ -32,7 +32,10 @@
 			</thead>
 			<tbody>
 			@foreach($issues as $issue)
-				<tr>
+				<tr @if(session()->has('active_issue'))
+	                    {!! (session('active_issue') == $issue->id)?"class='warning'":"" !!}
+	                @endif
+	                >
 					<td>{!! $issue->created_at!!}</td>
 					<td>{!! $issue->topupRequest->commodity->name !!}</td>
 					<td>{!! $issue->receipt->batch_no!!}</td>

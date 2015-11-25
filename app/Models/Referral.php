@@ -14,12 +14,12 @@ class Referral extends Model
 
     public function user()
     {
-        return $this->belongsTo('User');
+        return $this->belongsTo('App\Models\User');
     }
 
     public function facility()
     {
-    	return $this->belongsTo('Facility');
+    	return $this->belongsTo('App\Models\Facility');
     }
 
 }

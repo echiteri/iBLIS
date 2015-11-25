@@ -12,7 +12,7 @@
 			<span class="glyphicon glyphicon-user"></span>
 			{!!trans('messages.specimen-type-details')!!}
 			<div class="panel-btn">
-				<a class="btn btn-sm btn-info" href="{!! url("specimentype/". $specimentype->id ."/edit") !!}">
+				<a class="btn btn-sm btn-info" href="{!! url("specimentype/". $specimenType->id ."/edit") !!}">
 					<span class="glyphicon glyphicon-edit"></span>
 					{!!trans('messages.edit')!!}
 				</a>
@@ -20,10 +20,10 @@
 		</div>
 		<div class="panel-body">
 			<div class="display-details">
-				<h3 class="view"><strong>{!! Lang::choice('messages.name',1) !!}</strong>{!! $specimentype->name !!} </h3>
+				<h3 class="view"><strong>{!! Lang::choice('messages.name',1) !!}</strong>{!! $specimenType->name !!} </h3>
 				<p class="view-striped"><strong>{!!trans('messages.description')!!}</strong>
-					{!! $specimentype->description !!}</p>
-				<p class="view"><strong>{!!trans('messages.date-created')!!}</strong>{!! $specimentype->created_at !!}</p>
+					{!! $specimenType->description !!}</p>
+				<p class="view"><strong>{!!trans('messages.date-created')!!}</strong>{!! $specimenType->created_at !!}</p>
 			</div>
 		</div>
 	</div>

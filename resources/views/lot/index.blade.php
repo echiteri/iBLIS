@@ -33,6 +33,10 @@
 			</thead>
 			<tbody>
 			@foreach($lots as $lot)
+				<tr @if(session()->has('active_lot'))
+	                    {!! (session('active_lot') == $lot->id)?"class='warning'":"" !!}
+	                @endif
+	                >
 					<td>{!! $lot->number !!}</td>
 					<th>{!! $lot->description !!}</th>
 					<th>{!! $lot->expiry !!}</th>

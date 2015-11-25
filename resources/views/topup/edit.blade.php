@@ -24,12 +24,12 @@
          {!! Form::model($topupRequest, array('route' => array('topup.update', $topupRequest->id), 'method' => 'PUT', 'id' => 'form-edit-topup')) !!}
             <div class="form-group">
                 {!! Form::label('lab_section ', Lang::choice('messages.test-category', 1)) !!}
-                {!! Form::select('lab_section', array(null => '')+ $sections, $topupRequest->test_category_id,
+                {!! Form::select('lab_section', array(null => '')+ $sections->toArray(), $topupRequest->test_category_id,
                     array('class' => 'form-control', 'rows' => '2')) !!}
             </div>
             <div class="form-group">
                 {!! Form::label('commodity', trans('messages.commodity')) !!}
-                {!! Form::select('commodity', array(null => '')+ $commodities,
+                {!! Form::select('commodity', array(null => '')+ $commodities->toArray(),
                     $topupRequest->commodity_id, array('class' => 'form-control', 'id' => 'commodity_id')) !!}
             </div>
             <div class="form-group">

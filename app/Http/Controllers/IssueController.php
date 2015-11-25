@@ -1,9 +1,19 @@
 <?php namespace App\Http\Controllers;
 
+use App\Http\Requests;
+use App\Http\Requests\IssueRequest;
+
 use App\Models\Issue;
 use App\Models\TopupRequest;
 use App\Models\Receipt;
 use App\Models\User;
+use App\Models\TestCategory;
+use App\Models\Commodity;
+
+use Response;
+use Auth;
+use Session;
+use Lang;
 
 class IssueController extends Controller {
 
@@ -27,7 +37,7 @@ class IssueController extends Controller {
 	public function dispatch($id)
 	{
 		$topupRequest = TopupRequest::find($id);
-		$batches = Receipt::where('commodity_id', '=', $topupRequest->commodity_id)->lists('batch_no', 'id');
+		$batches = Receipt::where('commodity_id', '=', $topupRequest->issue_id)->lists('batch_no', 'id');
 		$users = User::where('id', '!=', Auth::user()->id)->lists('name', 'id');
 
 		return view('issue.create')
@@ -42,36 +52,19 @@ class IssueController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(IssueRequest $request)
 	{
-		//
-		$rules = array(
-			'receivers_name' => 'required',
-			'quantity_issued' => 'required|integer',
-			'batch_no' => 'required',
-		);
-		$validator = Validator::make(Input::all(), $rules);
+		$issue = new Issue;
+		$issue->receipt_id = $request->batch_no;
+		$issue->topup_request_id = $request->topup_request_id;
+		$issue->quantity_issued = $request->quantity_issued;
+		$issue->issued_to = $request->receivers_name;
+		$issue->remarks = $request->remarks;
+		$issue->user_id = Auth::user()->id;
+		$issue->save();
+		$url = session('SOURCE_URL');
 
-		if ($validator->fails()) {
-			return Redirect::route('issue.index')->withErrors($validator);
-		} else {
-			// store
-			$issue = new Issue;
-			$issue->receipt_id = Input::get('batch_no');
-			$issue->topup_request_id = Input::get('topup_request_id');
-			$issue->quantity_issued = Input::get('quantity_issued');
-			$issue->issued_to = Input::get('receivers_name');
-			$issue->user_id = Auth::user()->id;
-			$issue->remarks = Input::get('remarks');
-
-			try{
-			$issue->save();
-			return Redirect::route('issue.index')
-				->with('message', trans('messages.commodity-succesfully-added'));
-				}catch(QueryException $e){
-				Log::error($e);
-			}
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_issue', $issue ->id);
 	}
 
 
@@ -97,12 +90,12 @@ class IssueController extends Controller {
 	{
 		//
 		$issue = Issue::find($id);
-		$commodities= Commodity::all()->lists('name', 'id');
-		$batches = Receipt::all()->lists('batch_no', 'id');
+		$commodities= Commodity::lists('name', 'id');
+		$batches = Receipt::lists('batch_no', 'id');
 		$users = User::where('id', '!=', Auth::user()->id)->lists('name', 'id');
 		$sections = TestCategory::all()->lists('name', 'id');
 		//To DO:create function for this
-		$available = $issue->topupRequest->commodity->available();
+		$available = 0;
 		return view('issue.edit')
 			->with('commodities', $commodities)
 			->with('available', $available)
@@ -119,34 +112,19 @@ class IssueController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update(IssueRequest $request, $id)
 	{
-		$rules = array(
-			'receivers_name' => 'required',
-			'quantity_issued' => 'required|integer',
-			'batch_no' => 'required',
-		);
+		$issue = Issue::find($id);
+		$issue->receipt_id = $request->batch_no;
+		$issue->topup_request_id = $request->topup_request_id;
+		$issue->quantity_issued = $request->quantity_issued;
+		$issue->issued_to = $request->issued_to;
+		$issue->remarks = $request->remarks;
+		$issue->user_id = Auth::user()->id;
+		$issue->save();
+		$url = session('SOURCE_URL');
 
-		$validator = Validator::make(Input::all(), $rules);
-
-		if ($validator->fails()) {
-			return Redirect::route('issue.index')->withErrors($validator);
-				
-		} else {
-			// Update
-			$issue = Issue::find($id);
-			$issue->receipt_id = Input::get('batch_no');
-			$issue->topup_request_id = Input::get('topup_request_id');
-			$issue->quantity_issued = Input::get('quantity_issued');
-			$issue->issued_to = Input::get('receivers_name');
-			$issue->user_id = Auth::user()->id;
-			$issue->remarks = Input::get('remarks');
-
-			$issue->save();
-
-			return Redirect::route('issue.index')
-					->with('message', 'Successfully updated');
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_issue', $issue ->id);
 	}
 
 
@@ -163,7 +141,8 @@ class IssueController extends Controller {
 		$issue->delete();
 
 		// redirect
-		return Redirect::route('issue.index')->with('message', trans('messages.issue-succesfully-deleted'));
-	}
+		$url = session('SOURCE_URL');
 
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
+	}
 }

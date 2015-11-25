@@ -1,8 +1,14 @@
 <?php namespace App\Http\Controllers;
 
-use Illuminate\Support\MessageBag;
-use Illuminate\Database\QueryException;
+use App\Http\Requests;
+use App\Http\Requests\MeasureRequest;
 
+use App\Models\Measure;
+
+use Response;
+use Auth;
+use Session;
+use Lang;
 /**
  * Contains measure resources  
  * Measures are standard units and ranges of test results
@@ -160,7 +166,8 @@ class MeasureController extends Controller {
                 ->with('message', trans('messages.failure-test-measure-in-use'));
         }
         // redirect
-        return Redirect::route('measure.index')
-            ->with('message', trans('messages.success-deleting-measure'));
+        $url = session('SOURCE_URL');
+
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
     }
 }

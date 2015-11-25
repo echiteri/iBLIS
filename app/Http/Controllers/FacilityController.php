@@ -1,6 +1,14 @@
 <?php namespace App\Http\Controllers;
 
+use App\Http\Requests;
+use App\Http\Requests\FacilityRequest;
+
 use App\Models\Facility;
+
+use Response;
+use Auth;
+use Session;
+use Lang;
 
 class FacilityController extends Controller {
 
@@ -34,29 +42,14 @@ class FacilityController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(FacilityRequest $request)
 	{
-		//Validation
-		$rules = array('name' => 'required|unique:facilities,name');
-		$validator = Validator::make(Input::all(), $rules);
+		$facility = new Facility;
+		$facility->name = $request->name;
+		$facility->save();
+		$url = session('SOURCE_URL');
 
-		if ($validator->fails()) {
-			return Redirect::route('facility.index')->withErrors($validator)->withInput();
-		} else {
-			// Add
-			$facility = new Facility;
-			$facility->name = Input::get('name');
-			// redirect
-			try{
-				$facility->save();
-				$url = Session::get('SOURCE_URL');
-				return Redirect::to($url)
-					->with('message', trans('messages.successfully-updated-facility'))
-					->with('activefacility', $facility ->id);
-			} catch(QueryException $e){
-				Log::error($e);
-			}
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_facility', $facility ->id);
 	}
 
 
@@ -92,26 +85,14 @@ class FacilityController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update(FacilityRequest $request, $id)
 	{
-		//Validate and check
-		$rules = array('name' => 'required|unique:facilities,name');
-		$validator = Validator::make(Input::all(), $rules);
+		$facility = Facility::find($id);
+		$facility->name = $request->name;
+		$facility->save();
+		$url = session('SOURCE_URL');
 
-		if ($validator->fails()) {
-			return Redirect::route('facility.index')->withErrors($validator)->withInput();
-		} else {
-			// Update
-			$facility = Facility::find($id);
-			$facility->name = Input::get('name');
-			$facility->save();
-			// redirect
-			$url = Session::get('SOURCE_URL');
-			
-			return Redirect::to($url)
-
-				->with('message', trans('messages.successfully-updated-facility')) ->with('activefacility', $facility ->id);
-		}
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-saved', 1))->with('active_facility', $facility ->id);
 	}
 
 
@@ -130,12 +111,8 @@ class FacilityController extends Controller {
 		$facility->delete();
 
 		// redirect
-		$url = Session::get('SOURCE_URL');
-			
-			return Redirect::to($url)
+		$url = session('SOURCE_URL');
 
-			->with('message', trans('messages.successfully-deleted-facility'));
+        return redirect()->to($url)->with('message', Lang::choice('messages.record-successfully-deleted', 1));
 	}
-
-
 }

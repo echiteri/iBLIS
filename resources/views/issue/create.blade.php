@@ -35,7 +35,7 @@
             </div>
              <div class="form-group">
                 {!! Form::label('batch_no', trans('messages.batch-no')) !!}
-                {!! Form::select('batch_no', array(null => '')+ $batches, old('batch_no'),
+                {!! Form::select('batch_no', array(null => '')+ $batches->toArray(), old('batch_no'),
                     array('class' => 'form-control', 'rows' => '2', 'id' => 'batch_no')) !!}
             </div>
             <div class="form-group">
@@ -54,7 +54,7 @@
             </div>
             <div class="form-group">
                 {!! Form::label('receivers_name', trans('messages.receivers_name')) !!}
-                {!! Form::select('receivers_name', array(null => '')+ $users, old('issued_to'),
+                {!! Form::select('receivers_name', array(null => '')+ $users->toArray(), old('issued_to'),
                     array('class' => 'form-control', 'rows' => '2')) !!}
             </div>
             <div class="form-group">

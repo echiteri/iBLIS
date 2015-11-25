@@ -24,12 +24,12 @@
             {!! Form::model($receipt, array('route' => array('receipt.update', $receipt->id), 'method' => 'PUT', 'id' => 'form-edit-receipt')) !!}
 			<div class="form-group">
                 {!! Form::label('commodity', trans('messages.commodity')) !!}
-                {!! Form::select('commodity', array(null => '')+ $commodities, 
+                {!! Form::select('commodity', array(null => '')+ $commodities->toArray(), 
                     $receipt->commodity_id, array('class' => 'form-control')) !!}
             </div>
             <div class="form-group">
                 {!! Form::label('supplier', trans('messages.received-from')) !!}
-                  {!! Form::select('supplier', array(null => '')+ $suppliers, $receipt->supplier_id,
+                  {!! Form::select('supplier', array(null => '')+ $suppliers->toArray(), $receipt->supplier_id,
                     array('class' => 'form-control', 'id' => 'received_from')) !!}
             </div>
             <div class="form-group">

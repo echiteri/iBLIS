@@ -60,6 +60,9 @@ return array(
     'confirm-delete-message' => 'Do you wish to delete this item?',
     'confirm-delete-irreversible' => 'This action is irreversible.',
     'court-of-arms' => 'Court of Arms',
+    'record-successfully-saved' =>  'The record was successfully saved.',
+    'record-successfully-updated' =>  'The record was successfully updated.',
+    'record-successfully-deleted' =>  'The record was successfully deleted.',
 
     /** 
      *   User

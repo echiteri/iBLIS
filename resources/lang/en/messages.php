@@ -52,6 +52,7 @@ return array(
     'refer' => 'Refer',
     'in' => 'In',
     'out' => 'Out',
+    'barcode-label' =>  'Barcode Label',
 
     /** 
      *   Generic phrases

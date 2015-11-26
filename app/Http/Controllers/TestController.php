@@ -14,6 +14,7 @@ use Auth;
 use Session;
 use Lang;
 use Config;
+use DNS1D;
 /**
  * Contains test resources  
  * 
@@ -484,5 +485,22 @@ class TestController extends Controller {
 		Event::fire('test.verified', array($testID));
 
 		return view('test.viewDetails')->with('test', $test);
+	}
+	/**
+	 * generate barcode
+	 *
+	 * @param  int  $id
+	 * @return Response
+	 */
+	public function barcode($id)
+	{
+		$spec = null;
+		if (($pos = strpos($id, "-")) !== FALSE)
+		{ 
+		    $spec = substr($id, $pos+1); 
+		}
+		//	show the view and pass the $item to it
+		/* for more formats, please check 1D barcodes on https://github.com/milon/barcode */
+		return DNS1D::getBarcodeHTML($spec, "CODABAR");
 	}
 }

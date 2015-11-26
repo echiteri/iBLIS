@@ -4,10 +4,10 @@
     <title>{{ Config::get('logbook.name') }}</title>
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <!-- Bootstrap -->
-      <link href="{{ URL::asset('css/bootstrap.min.css') }}" rel="stylesheet">
-      <script src="{{ URL::asset('admin/js/jquery.min.js') }}"></script>
+      <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+      <script src="{{ asset('admin/js/jquery.min.js') }}"></script>
       <!-- Font awesome css -->
-	  <link rel="stylesheet" href="{{ URL::asset('css/font-awesome.min.css') }}">
+	  <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}">
 
       <style type="text/css">
           .header{
@@ -128,6 +128,6 @@
               		{!! date('Y') !!} {!! Lang::choice('messages.compiled-by', 1) !!}
       	</footer>
 	    </div>
-      	<script src="{{ URL::asset('admin/js/bootstrap.min.js') }}"></script>
+      	<script src="{{ asset('admin/js/bootstrap.min.js') }}"></script>
   	</body>
 </html>

@@ -263,6 +263,13 @@
                                         {!!trans('messages.verify')!!}
                                     </a>
                                 @endif
+
+                                <div class="">
+                                    <a class="btn btn-sm btn-primary barcode-button" href="{!! url("specimen/" . $test->getSpecimenId() . "/barcode") !!}">
+                                        <i class="fa fa-barcode"></i>
+                                        {!!trans('messages.barcode-label')!!}
+                                    </a>
+                                </div> <!-- /. barcode-button -->
                             @endif
                         @endif
                         </td>
@@ -434,4 +441,11 @@
             {!!trans('messages.refer-sample')!!}
         </a>
     </div> <!-- /. referral-button -->
+
+    <div class="">
+        <a class="btn btn-sm btn-primary barcode-button" href="#">
+            <i class="fa fa-barcode"></i>
+            {!!trans('messages.refer-sample')!!}
+        </a>
+    </div> <!-- /. barcode-button -->
 @stop

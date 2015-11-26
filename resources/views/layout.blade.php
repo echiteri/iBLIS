@@ -3,17 +3,19 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" type="text/css" href="{{ URL::asset('css/ui-lightness/jquery-ui-min.css') }}" />
-        <link rel="stylesheet" type="text/css" href="{{ URL::asset('css/bootstrap.min.css') }}" />
-        <link rel="stylesheet" type="text/css" href="{{ URL::asset('css/bootstrap-theme.min.css') }}" />
-        <link rel="stylesheet" type="text/css" href="{{ URL::asset('css/dataTables.bootstrap.css') }}" />
-        <link rel="stylesheet" type="text/css" href="{{ URL::asset('css/layout.css') }}" />
-        <script type="text/javascript" src="{{ URL::asset('js/jquery.js') }}"></script>
-        <script type="text/javascript" src="{{ URL::asset('js/jquery-ui-min.js') }}"></script>
-        <script type="text/javascript" src="{{ URL::asset('js/bootstrap.min.js') }}"></script>
-        <script type="text/javascript" src="{{ URL::asset('js/jquery.dataTables.js') }}"></script>
-        <script type="text/javascript" src="{{ URL::asset('js/dataTables.bootstrap.js') }}"></script>
-        <script type="text/javascript" src="{{ URL::asset('js/script.js') }} "></script>
+        <link rel="stylesheet" type="text/css" href="{{ asset('css/ui-lightness/jquery-ui-min.css') }}" />
+        <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.min.css') }}" />
+        <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap-theme.min.css') }}" />
+        <link rel="stylesheet" type="text/css" href="{{ asset('css/dataTables.bootstrap.css') }}" />
+        <link rel="stylesheet" type="text/css" href="{{ asset('css/layout.css') }}" />
+        <!-- Font awesome css -->
+        <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}">
+        <script type="text/javascript" src="{{ asset('js/jquery.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/jquery-ui-min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/jquery.dataTables.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/dataTables.bootstrap.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/script.js') }} "></script>
         <title>{{ Config::get('kblis.name') }} {{ Config::get('kblis.version') }}</title>
     </head>
     <body>

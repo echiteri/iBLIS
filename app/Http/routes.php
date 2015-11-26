@@ -152,7 +152,7 @@ Route::group(array("before" => "auth"), function()
         "as"   => "test.acceptSpecimen",
         "uses" => "TestController@accept"
     ));
-     Route::get("/test/{id}/refer", array(
+    Route::get("/test/{id}/refer", array(
         "before" => "checkPerms:refer_specimens",
         "as"   => "test.refer",
         "uses" => "TestController@showRefer"
@@ -218,6 +218,10 @@ Route::group(array("before" => "auth"), function()
     Route::any("/susceptibility/saveSusceptibility", array(
         "as"   => "drug.susceptibility",
         "uses" => "SusceptibilityController@store"
+    ));
+    Route::get("/specimen/{id}/barcode", array(
+        "as"   => "specimen.barcode",
+        "uses" => "TestController@barcode"
     ));
     Route::group(array("before" => "admin"), function()
     {

@@ -638,6 +638,7 @@ return array(
      *   MOH 706 report
      */
     'moh-706'   =>  'MOH 706',
+    '706'   =>  'MOH 706 v2',
     'moh'   =>  'Ministry of Health',
     'lab-tests-data-report'  =>  'Laboratory Tests Data Summary Report Form',
     'affiliation'   =>  'Affiliation',

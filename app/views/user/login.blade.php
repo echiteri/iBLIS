@@ -12,7 +12,7 @@
             <div class="login-form">
                 <div class="form-head">
                     <img src="{{ Config::get('kblis.organization-logo') }}" alt="" height="90" width="90">
-                    <h3> {{ Config::get('kblis.organization') }} </h3>
+                    <h3><strong> {{ Config::get('kblis.organization') }} </strong></h3>
                     @if($errors->all())
                         <div class="alert alert-danger">
                             {{ HTML::ul($errors->all()) }}

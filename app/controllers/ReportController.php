@@ -3221,4 +3221,376 @@ class ReportController extends \BaseController {
 				->withInput(Input::all());
 		}
 	}
+	/**
+	*
+	*	MOH 706 version 2
+	*
+	*/
+	public function v2706()
+	{
+		$urinalysis = ['Urine Chemistry', 'Glucose', 'Ketones', 'Proteins', 'Urine Microscopy', 'Pus cells (>5/hpf)', 'S. haematobium', 'T. vaginalis', 'Yeast cells', 'Bacteria'];
+		$chemist = ['Blood sugar', 'OGTT', 'Renal Function Test', 'Creatinine', 'Urea', 'Sodium', 'Potassium', 'Chlorides', 'Liver Function Test', 'Direct bilirubin', 'ASAT (SGOT)', 'ALAT (SGPT)', 'Serum Protein', 'Albumin', 'Alkaline phosphatase', 'Lipid Profile', 'Total cholestrol', 'Triglycerides', 'LDL', 'Hormonal Test', 'T3', 'T4', 'TSH', 'PSA', 'Tumor Markers', 'CEA', 'C15-3', 'CSF Chemistry', 'Proteins', 'Glucose'];
+		$parasitology = ['Malaria BS (Under five years)', 'Malaria BS (5 years and above)', 'Malaria Rapid Diagnostic Tests', 'Stool Examination', 'Taenia spp.', 'Hymenolepis nana', 'Hookworm', 'Roundworms', 'S. mansoni', 'Trichuris trichura', 'Amoeba'];
+		$hematology  = ['Full blood count', 'HB estimation tests(other techniques)', 'CD4 count', 'Other Haematology tests', 'Sickling test', 'Peripheral blood films', 'BMA', 'Coagulation profile', 'Reticulocyte Count', 'Erythrocyte Sedimentation rate', 'Blood Grouping', 'Total blood group tests', 'Blood units grouped', 'Blood safety', 'Blood units received from blood transfusion centres', 'Blood units collected at facility', 'Blood units transfused', 'Transfusion reactions reported and investigated', 'Blood cross matched', 'Blood units discarded', 'Blood Screening at facility', 'HIV', 'Hepatitis B', 'Hepatitis C', 'Syphilis'];
+		$bacteriology = ['Urine', 'Pus swabs', 'High Vaginal Swabs', 'Throat swab', 'Rectal swab', 'Blood', 'Water', 'Food', 'Urethral swabs', 'Bacterial enteric pathogens', 'Stool Cultures', 'Stool Isolates', 'Salmonella Typhi', 'Shigella - dysenteriae type 1', 'E. coli O 157:H7', 'V. cholerae O1', 'V. cholerae O139', 'Bacterial menengitis', 'CSF', 'Bacterial meningitis Serotypes', 'Neisseria meningitidis A', 'Neisseria meningitidis B', 'Neisseria meningitidis C', 'Neisseria meningitidis W135', 'Neisseria meningitidis X', 'Neisseria meningitidis Y', 'N. meningitidis (indeterminate)', 'Streptococcus pneumoniae', 'Haemophilus influenzae (type b)', 'Cryptococcal Meningitis', 'Bacterial pathogens from other types of specimen', 'B. anthracis', 'Y. pestis', 'SPUTUM', 'Total TB smears', 'TB new suspects', 'TB Follow up', 'Rifampicin Resistant TB', 'MDR TB'];
+		$histology = ['PAP smear', 'Touch preparations', 'Tissue impressions', 'Fine Needle Aspirates', 'Thyroid', 'Lymph nodes', 'Liver', 'Breast', 'Soft tissue masses', 'Fluid Cytology', 'Ascitic fluid', 'CSF', 'Pleural fluid', 'Urine', 'Tissue Histology', 'Cervix', 'Prostrate', 'Breast tissue', 'Ovary', 'Uterus', 'Skin', 'Head and Neck', 'Dental', 'GIT', 'Lymph nodes tissue', 'Bone Marrow Studies', 'Bone marrow aspirate', 'Trephine biospy'];
+		$serology = ['VDRL', 'TPHA', 'ASOT', 'HIV', 'Brucella', 'Rheumatoid factor', 'Helicobacter pylori', 'Hepatitis A test', 'Hepatitis B test', 'Hepatitis C test', 'HCG', 'CRAG test'];
+		$referral = ['CD4', 'Viral load', 'EID', 'Discordant/discrepant', 'TB Culture', 'Virological', 'Clinical Chemistry', 'Histology/cytology', 'Haematological', 'Parasitological', 'Blood samples for transfusion screening'];
+		$drugs = ['Ampicillin', 'Chloramphenicol', 'Cefriaxone', 'Penicillin', 'Oxacillin', 'Ciprofloxacin', 'Nalidixic acid', 'Trimethoprim-sulphamethoxazole', 'Tetracycline', 'Augumentin'];
+		$pathogens = ['Haemophilus influenzae', 'Neisseria menengitidis', 'Streptococcus pneumoniae', 'Salmonella serotype Typhi', 'Shigella', 'Vibrio cholerae', 'B. anthracis', 'Y. pestis'];
+		$data = '<!-- Urine Analysis -->
+				<table class="table table-condensed report-table-border table-responsive">
+					<tbody>
+						<tr>
+							<td colspan="3" align="center"><strong>1. URINE ANALYSIS</strong></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><strong>Total Exam</strong></td>
+							<td><strong>Number Positive</strong></td>
+						</tr>';
+						$i = 0;
+						$counter = 1;
+						$urinaId = TestType::getTestTypeIdByTestName('Urinalysis');
+						$urinalys = TestType::find($urinaId);
+						foreach ($urinalysis as $urinal)
+						{
+							$i++;
+							$style1 = null;
+							$style2 = null;
+							if($urinal == 'Urine Chemistry' || $urinal == 'Urine Microscopy')
+							{
+								$style2 = 'style="background-color: #CCCCCC;"';
+								$data.='<tr><td><strong>'.$counter.'.'.$i.' '.$urinal.'</strong></td><td '.$style1.'><strong>'.$urinalys->groupedTestCount(null, null, null, null).'</strong></td><td '.$style2.'><strong></strong></td></tr>';
+							}
+							else
+							{
+								$style1 = 'style="background-color: #CCCCCC;"';
+								$data.='<tr><td>'.$counter.'.'.$i.' '.$urinal.'</td><td '.$style1.'></td><td '.$style2.'></td></tr>';
+							}
+						}
+					$data.='
+					</tbody>
+				</table>';
+			$data.= '<!-- Blood Chemistry -->
+				<table class="table table-condensed report-table-border table-responsive">
+					<tbody>
+						<tr>
+							<td colspan="4" align="center"><strong>2. BLOOD CHEMISTRY</strong></td>
+						</tr>
+						<tr>
+							<td><strong>Blood Sugar Test</strong></td>
+							<td><strong>Total Exam</strong></td>
+							<td><strong>Low</strong></td>
+							<td><strong>High</strong></td>
+						</tr>';
+						$i = 0;
+						$counter = 2;
+						foreach ($chemist as $bldChem)
+						{
+							$i++;
+							$style1 = null;
+							$style2 = null;
+							if($bldChem == 'Renal Function Test' || $bldChem == 'Liver Function Test' || $bldChem == 'Lipid Profile')
+							{
+								$style2 = 'style="background-color: #CCCCCC;"';
+								$data.='<tr><td><strong>'.$counter.'.'.$i.' '.$bldChem.'</strong></td><td '.$style1.'><strong></strong></td><td '.$style2.'><strong></strong></td><td '.$style2.'></strong></td></tr>';
+							}
+							else if($bldChem == 'Creatinine' || $bldChem == 'Urea' || $bldChem == 'Sodium' || $bldChem == 'Potassium' || $bldChem == 'Chlorides' || $bldChem == 'Direct bilirubin' || $bldChem == 'Total bilirubin' || $bldChem == 'ASAT (SGOT)' || $bldChem == 'ALAT (SGPT)' || $bldChem == 'Serum Protein' || $bldChem == 'Albumin' || $bldChem == 'Alkaline phosphatase')
+							{
+								$style1 = 'style="background-color: #CCCCCC;"';
+								$data.='<tr><td>'.$counter.'.'.$i.' '.$bldChem.'</td><td '.$style1.'></td><td '.$style2.'></td><td '.$style2.'></td></tr>';
+							}
+							else
+							{
+								if($bldChem == 'Hormonal Test' || $bldChem == 'CSF Chemistry')
+								{
+									$data.='<tr><td><strong>'.$counter.'.'.$i.' '.$bldChem.'</strong></td><td><strong>Total Exam</strong></td><td><strong>Low</strong></td><td><strong>High</strong></td></tr>';
+								}
+								else if($bldChem == 'Tumor Markers')
+								{
+									$data.='<tr><td><strong>'.$counter.'.'.$i.' '.$bldChem.'</strong></td><td><strong>Total Exam</strong></td><td colspan="2"><strong>Number Positive</strong></td></tr>';
+								}
+								else
+								{
+									$data.='<tr><td>'.$counter.'.'.$i.' '.$bldChem.'</td><td></td><td></td><td></td></tr>';
+								}
+							}
+						}
+					$data.='
+					</tbody>
+				</table>
+				<!-- Parasitology -->
+				<table class="table table-condensed report-table-border table-responsive">
+					<tbody>
+						<tr>
+							<td colspan="3" align="center"><strong>3. PARASITOLOGY</strong></td>
+						</tr>
+						<tr>
+							<td><strong>Malaria Test</strong></td>
+							<td><strong>Total Exam</strong></td>
+							<td><strong>Number Positive</strong></td>
+						</tr>';
+					$i = 0;
+					$counter = 3;
+					foreach ($parasitology as $parasit)
+					{
+						$i++;
+						$style = null;
+						if($parasit == 'Taenia spp.' || $parasit == 'Hymenolepis nana' || $parasit == 'Hookworm' || $parasit == 'Roundworms' || $parasit == 'S. mansoni' || $parasit == 'Trichuris trichura' || $parasit == 'Amoeba')
+							$style = 'style="background-color: #CCCCCC;"';
+						$data.='<tr><td>'.$counter.'.'.$i.' '.$parasit.'</td><td '.$style.'></td><td></td></tr>';
+						if($parasit == 'Stool Examination')
+							$data.='<tr><td><strong>'.$counter.'.'.$i.' '.$parasit.'</strong></td><td '.$style.'><strong></strong></td><td><strong>Number Positive</strong></td></tr>';
+					}
+					$data.='
+					</tbody>
+				</table>
+				<!-- Haematology -->
+				<table class="table table-condensed report-table-border table-responsive">
+					<tbody>
+						<tr>
+							<td colspan="4" align="center"><strong>4. HAEMATOLOGY</strong></td>
+						</tr>
+						<tr>
+							<td><strong>Haematology Tests</strong></td>
+							<td><strong>Total Exam</strong></td>
+							<td><strong>HB < 5 g/dl</strong></td>
+							<td><strong>HB between 5 and 10 g/dl</strong></td>
+						</tr>';
+					$i = 0;
+					$counter = 4;
+					foreach ($hematology as $haem)
+					{
+						$i++;
+						$style = null;
+						if($haem == 'CD4 count')
+						{
+							$data.='<tr><td rowspan="2">'.$counter.'.'.$i.' '.$haem.'</td><td  rowspan="2" '.$style.'></td><td colspan="2"><strong>Number <500</strong></td></tr><tr><td colspan="2"></td></tr>';
+						}
+						else if($haem == 'Other Haematology tests')
+						{
+							$data.='<tr><td colspan="4"></td></tr><tr><td><strong>'.$counter.'.'.$i.' '.$haem.'</strong></td><td '.$style.'><strong>Total Exam</strong></td><td colspan="2"><strong>Number Positive</strong></td></tr>';
+						}
+						else if($haem == 'Erythrocyte Sedimentation rate')
+						{
+							$style = 'style="background-color: #CCCCCC;"';
+							$data.='<tr><td '.$style.'></td><td '.$style.'></td><td colspan="2"><strong>High</strong></td></tr><tr><td>'.$counter.'.'.$i.' '.$haem.'</td><td></td><td colspan="2"></td></tr>';
+						}
+						else if($haem == 'Blood Grouping')
+						{
+							$data.='<tr><td colspan="4"></td></tr><tr><td colspan="2"><strong>'.$counter.'.'.$i.' '.$haem.'</strong></td><td colspan="2"><strong>Number</strong></td></tr>';
+						}
+						else if($haem == 'Blood safety')
+						{
+							$data.='<tr><td colspan="2"><strong>'.$counter.'.'.$i.' '.$haem.'</strong></td><td colspan="2"><strong>Number</strong></td></tr>';
+						}
+						else if($haem == 'Blood Screening at facility')
+						{
+							$data.='<tr><td colspan="2"><strong>'.$counter.'.'.$i.' '.$haem.'</strong></td><td colspan="2"><strong>Number Positive</strong></td></tr>';
+						}
+						else
+						{
+							$data.='<tr><td>'.$counter.'.'.$i.' '.$haem.'</td><td '.$style.'></td><td></td><td></td></tr>';
+						}
+					}
+					$data.='
+					</tbody>
+				</table>
+				<!-- Bacteriology -->
+				<table class="table table-condensed report-table-border table-responsive">
+					<tbody>
+						<tr>
+							<td colspan="4" align="center"><strong>5. BACTERIOLOGY</strong></td>
+						</tr>
+						<tr>
+							<td><strong>Bacteriological Samole</strong></td>
+							<td><strong>Total Exam</strong></td>
+							<td><strong>Total Cultures</strong></td>
+							<td><strong>No. Culture Positive</strong></td>
+						</tr>';
+					$i = 0;
+					$counter = 6;
+					foreach ($bacteriology as $bacteria)
+					{
+						$i++;
+						$style = null;
+						if($bacteria == 'Bacterial enteric pathogens')
+						{
+							$data.='<tr><td colspan="2"><strong>'.$counter.'.'.$i.' '.$bacteria.'</strong></td><td><strong>Total exam</strong></td><td><strong>Number Positive</strong></td></tr>';
+						}
+						else if($bacteria == 'Stool Isolates')
+						{
+							$data.='<tr><td colspan="2"><strong>'.$counter.'.'.$i.' '.$bacteria.'</strong></td><td colspan="2"><strong>Number Positive</strong></td></tr>';
+						}
+						else if($bacteria == 'Bacterial meningitis')
+						{
+							$data.='<tr><td colspan="4"><strong>'.$bacteria.'</strong></tr><tr><td><strong>'.$counter.'.'.$i.' '.$bacteria.'</strong></td><td><strong>Total exam</strong></td><td><strong>Number Positive</strong></td><td><strong>Number Contaminated</strong></td></tr>';
+						}
+						else if($bacteria == 'Bacterial meningitis Serotypes')
+						{
+							$data.='<tr><td colspan="2"><strong>'.$counter.'.'.$i.' '.$bacteria.'</strong></td><td colspan="2"><strong>Number Positive</strong></td></tr>';
+						}
+						else if($bacteria == 'Bacterial Pathogens from other types of specimen')
+						{
+							$data.='<tr><td colspan="4"><strong>'.$counter.'.'.$i.' '.$bacteria.'</strong></td></tr>';
+						}
+						else if($bacteria == 'SPUTUM')
+						{
+							$data.='<tr><td colspan="4"></td></tr><tr><td colspan="2"><strong>'.$counter.'.'.$i.' '.$bacteria.'</strong></td><td><strong>Total exam</strong></td><td><strong>Number Positive</strong></td></tr>';
+						}
+						else
+						{
+							$data.='<tr><td>'.$counter.'.'.$i.' '.$bacteria.'</td><td></td><td></td><td></td></tr>';
+						}
+					}
+					$data.='
+					</tbody>
+				</table>
+				<!-- Histology and Cytology -->
+				<table class="table table-condensed report-table-border table-responsive">
+					<tbody>
+						<tr>
+							<td colspan="3" align="center"><strong>6. HISTOLOGY AND CYTOLOGY</strong></td>
+						</tr>
+						<tr>
+							<td><strong>Smears</strong></td>
+							<td><strong>Total Exam</strong></td>
+							<td><strong>Malignant</strong></td>
+						</tr>';
+					$i = 0;
+					$counter = 5;
+					foreach ($histology as $cytology)
+					{
+						$i++;
+						$style = null;
+						if($cytology == 'Fine Needle Aspirates' || $cytology == 'Fluid Cytology' || $cytology == 'Tissue Histology' || $cytology == 'Bone Marrow Studies')
+						{
+							$data.='<tr><td><strong>'.$counter.'.'.$i.' '.$cytology.'</strong></td><td><strong>Total Exam</strong></td><td><strong>Malignant</strong></td></tr>';
+						}
+						else
+						{
+							$data.='<tr><td>'.$counter.'.'.$i.' '.$cytology.'</td><td '.$style.'></td><td></td></tr>';
+						}
+					}
+					$data.='
+					</tbody>
+				</table>
+				<!-- Serology -->
+				<table class="table table-condensed report-table-border table-responsive">
+					<tbody>
+						<tr>
+							<td colspan="3" align="center"><strong>7. SEROLOGY</strong></td>
+						</tr>
+						<tr>
+							<td><strong>Serological Test</strong></td>
+							<td><strong>Total Exam</strong></td>
+							<td><strong>Number Positive</strong></td>
+						</tr>';
+					$i = 0;
+					$counter = 7;
+					foreach ($serology as $sero)
+					{
+						$i++;
+						$style = null;
+						if($sero == 'Rheumatoid factor')
+						{
+							$test_type_id = TestType::getTestTypeIdByTestName('RF');
+						}
+						else if($sero == 'HIV')
+						{
+							$test_type_id = TestType::getTestTypeIdByTestName('HTC- HIV');
+						}
+						else if($sero == 'Helicobacter pylori')
+						{
+							$test_type_id = TestType::getTestTypeIdByTestName('H pylori');
+						}
+						else if($sero == 'Hepatitis A test' || $sero == 'Hepatitis B test' || $sero == 'Hepatitis C test')
+						{
+							$test_type_id = TestType::getTestTypeIdByTestName(substr($sero, 0, -5));
+						}
+						else
+						{
+							$test_type_id = TestType::getTestTypeIdByTestName($sero);
+						}
+						$counts = 'N/S';
+						if($test_type_id)
+							$counts = TestType::find($test_type_id)->groupedTestCount();
+						$data.='<tr><td>'.$counter.'.'.$i.' '.$sero.'</td><td>'.$counts.'</td><td></td></tr>';
+					}
+					$data.='
+					</tbody>
+				</table>
+				<!-- Specimen referral to higher levels -->
+				<table class="table table-condensed report-table-border table-responsive">
+					<tbody>
+						<tr>
+							<td colspan="3" align="center"><strong>8. SPECIMEN REFERRAL TO HIGHER LEVELS</strong></td>
+						</tr>
+						<tr>
+							<td><strong>Specimen Referral</strong></td>
+							<td><strong>No. of Specimens</strong></td>
+							<td><strong>No. of Results Received</strong></td>
+						</tr>';
+					$i = 0;
+					$counter = 8;
+					foreach ($referral as $refer)
+					{
+						$i++;
+						$style = null;
+						$data.='<tr><td>'.$counter.'.'.$i.' '.$refer.'</td><td '.$style.'></td><td></td></tr>';
+					}
+					$data.='
+					</tbody>
+				</table>
+				<!-- Drug susceptibility testing -->
+				<table class="table table-condensed report-table-border table-responsive">
+					<tbody>
+						<tr>
+							<td colspan="3" align="center"><strong>9. Drug Susceptibility Testing</strong></td>
+						</tr>';
+					$alpha = 'a';
+					foreach ($drugs as $drug)
+					{
+						$data.='
+						<tr>
+							<td rowspan="2"><strong>Drug Sensitivity Pattern</strong></td>
+							<td colspan="2"><strong>'.$alpha.'. '.$drug.'</strong></td>
+						</tr>
+						<tr>
+							<td><strong>Sensitive</strong></td>
+							<td><strong>Resistant</strong></td>
+						</tr>';
+						$i = 0;
+						$counter = 9;
+						foreach ($pathogens as $pathogen)
+						{
+							$i++;
+							$data.='
+							<tr>
+								<td><i>'.$counter.'.'.$i.' '.$pathogen.'</i></td>
+								<td>N/S</td>
+								<td></td>
+							</tr>';
+						}
+						$alpha++;
+					}
+					$data.='
+					</tbody>
+				</table>';
+		if(Input::has('excel')){
+			$date = date("Ymdhi");
+			$fileName = "MOH706_".$date.".xls";
+			$headers = array(
+			    "Content-type"=>"text/html",
+			    "Content-Disposition"=>"attachment;Filename=".$fileName
+			);
+			$content = $table;
+	    	return Response::make($content,200, $headers);
+		}
+		else{
+			//return View::make('reports.moh.706');
+			return View::make('reports.moh.indexv2')->with('data', $data);
+		}
+	}
 }

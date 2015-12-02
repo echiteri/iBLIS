@@ -28,6 +28,7 @@
 		case 'infection':
 		case 'userstatistics':
 		case 'moh706':
+		case '706':
 		case 'cd4':
 		case 'qualitycontrol':
 			$active[5] = "active"; break;
@@ -218,6 +219,12 @@
 						<div><a href="{{ URL::route('reports.aggregate.moh706')}}">
 							<span class="glyphicon glyphicon-tag"></span>
 							{{trans('messages.moh-706')}}</a>
+						</div>
+					</li>
+					<li>
+						<div><a href="{{ URL::route('reports.aggregate.706')}}">
+							<span class="glyphicon glyphicon-tag"></span>
+							{{trans('messages.706')}}</a>
 						</div>
 					</li>					
 					<li>
